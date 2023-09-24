@@ -1,0 +1,14 @@
+# IDE folders
+.idea
+.vs
+
+# Output folders
+[Bb]in
+[Oo]bj
+
+# Visual studio files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
