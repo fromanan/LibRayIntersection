@@ -6,12 +6,9 @@
 // Author :       Charles B. Owen
 //
 
-#if !defined(AFX_OPENGLRENDERER_H__96078397_F350_4485_A87E_94051B49266B__INCLUDED_)
-#define AFX_OPENGLRENDERER_H__96078397_F350_4485_A87E_94051B49266B__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include "grafx.h"
 
 #include "GrRenderer.h"
 
@@ -33,5 +30,3 @@ public:
     virtual void RendererPushMatrix();
 
 };
-
-#endif // !defined(AFX_OPENGLRENDERER_H__96078397_F350_4485_A87E_94051B49266B__INCLUDED_)

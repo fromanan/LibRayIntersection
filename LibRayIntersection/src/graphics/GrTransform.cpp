@@ -8,7 +8,7 @@
 //
 
 #include "stdafx.h"
-#include <cmath>
+
 #include "GrTransform.h"
 
 void CGrTransform::SetIdentity()

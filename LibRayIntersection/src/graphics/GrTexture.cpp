@@ -13,11 +13,7 @@
 
 #include "stdafx.h"
 
-#include "ShaderHeaders.h"
-
 #include "GrTexture.h"
-
-using namespace std;
 
 // Unicode support for a basic STL string so this will work either way
 #ifdef UNICODE

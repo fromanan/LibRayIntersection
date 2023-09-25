@@ -8,14 +8,10 @@
 //
 
 #include "stdafx.h"
+
 #include "OpenGLRenderer.h"
 
 #include "GrTexture.h"
-
-#include <GL/glu.h>
-#include <list>
-
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

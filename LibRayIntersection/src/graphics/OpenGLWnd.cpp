@@ -15,11 +15,9 @@
 
 
 #include "stdafx.h"
+
 #include "OpenGLWnd.h"
 
-#include <cassert>
-#include <fstream>
-#include <vector>
 #include <strstream>
 
 using namespace std;

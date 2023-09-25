@@ -4,6 +4,7 @@
 #include <afxwin.h>
 #include <stdio.h>
 
+// C++ Libraries (STL)
 #include <cmath>
 #include <string>
 #include <vector>
@@ -12,9 +13,11 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
+#include <cassert>
 
 using namespace std;
 
+// Graphics Libraries
 #define GLEW_STATIC
 #include <glew.h>
 #include <glext.h>
@@ -33,3 +36,11 @@ using namespace glm;
 /*#ifndef NOOPENGL
 #include <GL/gl.h>
 #endif*/
+
+///
+/// CONSTANTS
+///
+const double GR_PI = 3.1415926535897932384626433832795;
+const double GR_PI2 = 2. * GR_PI;
+const double GR_RTOD = 180. / GR_PI;      // Converts radians to degrees
+const double GR_DTOR = GR_PI / 180.;      // Converts degrees to radians

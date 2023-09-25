@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <GL/glu.h>
+#include "grafx.h"
 
 //! Class that defines a simple camera model we can use with the mouse.
 /*! The CGrCamera class can be used in application to allow the mouse to

@@ -4,18 +4,10 @@
 
 #include "stdafx.h"
 
-#include <string>
-#include <fstream>
-#include <strstream>
-#include <vector>
-#include <cassert>
-
 #include "GrPoint.h"
 #include "GrVRMLFactory.h"
 #include "GrRenderer.h"
 #include "GrTexture.h"
-
-using namespace std;
 
 #ifdef _DEBUG
 #undef THIS_FILE

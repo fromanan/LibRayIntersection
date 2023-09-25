@@ -5,16 +5,11 @@
 // Author :       Charles B. Owen
 //
 
-
-#ifndef _GRRENDERER_H
-#define _GRRENDERER_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include "grafx.h"
 
 #include "GrObject.h"
-#include <vector>
 
 class CGrRenderer  
 {
@@ -101,5 +96,3 @@ private:
     std::list<CGrPoint>  m_polytexture;
 
 };
-
-#endif // !defined(AFX_GRRENDERER_H__CFA4660A_883B_405D_B8D2_8DA9D471E66C__INCLUDED_)

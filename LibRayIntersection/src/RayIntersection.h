@@ -8,12 +8,7 @@
 //                 4-11-07 2.01 Fixed problems related to coincident vertices
 //
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
-#ifndef _RAYINTERSECTION_H
-#define _RAYINTERSECTION_H
 
 #ifdef LIBRIDLL
 #define LIBRIEXPORT  __declspec( dllexport )
@@ -21,14 +16,7 @@
 #define LIBRIEXPORT  __declspec( dllimport )
 #endif
 
-#include <list>
-#include <vector>
-
 #include "GrPoint.h"
-
-#if !defined(GRPOINT_VERSION_MAJOR) || GRPOINT_VERSION_MAJOR != 1 || GRPOINT_VERSION_MINOR != 2
-#error GrPoint.h version 1.02 is required
-#endif
 
 // 
 // To use:
@@ -46,8 +34,6 @@
 // 5.  Call Intersect() to test for intersections
 // 6.  Call IntersectInfo() to get intersection information for rendering
 //
-
-
 
 // Anonymous references so you can make these anything you want.
 class CGrTexture;

@@ -7,18 +7,11 @@
 //
 #pragma once
 
-#if !defined(LibGrafx)
+#ifndef LibGrafx
 #define LibGrafx
 #endif
 
-#if !defined(_GRVector_H)
-#define _GRVector_H
-
-#ifndef NOOPENGL
-#include <GL/gl.h>
-#endif
-
-#include <cmath>
+#include "grafx.h"
 
 //! Class that contains a 4 element vector of doubles.
 
@@ -326,5 +319,3 @@ inline double Distance(const CGrVector &a, const CGrVector &b)
                 (a.Y() - b.Y()) * (a.Y() - b.Y()) +
                 (a.Z() - b.Z()) * (a.Z() - b.Z()));
 }
-
-#endif

@@ -5,15 +5,9 @@
 // Author :       Charles B. Owen
 //
 
-#if !defined(GRVRMLFACTOR_H)
-#define GRVRMLFACTOR_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include <string>
-#include <vector>
+#include "grafx.h"
 #include "GrObject.h"
 #include "libvrml.h"
 
@@ -56,8 +50,6 @@ private:
     std::vector<CGrPtr<CGrMaterial> > m_materials;
 };
 
-
-
 class CGrVRMLFactory  
 {
 public:
@@ -66,7 +58,6 @@ public:
 
 	bool Load(const char *p_file);
 
-
     // Results return
     CGrVRML *SceneGraph() {return m_vrml;}
 
@@ -74,5 +65,3 @@ private:
     // Pointer to the created object
     CGrPtr<CGrVRML>    m_vrml;
 };
-
-#endif

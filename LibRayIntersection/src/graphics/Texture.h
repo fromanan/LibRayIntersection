@@ -4,13 +4,9 @@
 // Version :      See Texture.cpp
 //
 
-#if !defined(_TEXTURE_H)
-#define _TEXTURE_H
-
 #pragma once
 
-#include <fstream>
-#include <GL/gl.h>
+#include "grafx.h"
 
 class CTexture  
 {
@@ -53,5 +49,3 @@ private:
     int m_width;
     BYTE ** m_image;
 };
-
-#endif 

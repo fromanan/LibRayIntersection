@@ -4,19 +4,11 @@
 //                a 4x4 transformation matrix.  
 //
 
-#if !defined(AFX_GRTRANSFORM_H__BB2CDF1C_D660_4826_AD0E_16C7D5C04A29__INCLUDED_)
-#define AFX_GRTRANSFORM_H__BB2CDF1C_D660_4826_AD0E_16C7D5C04A29__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include "grafx.h"
 
 #include "GrPoint.h"
-
-const double GR_PI = 3.1415926535897932384626433832795;
-const double GR_PI2 = 2. * GR_PI;
-const double GR_RTOD = 180. / GR_PI;      // Converts radians to degrees
-const double GR_DTOR = GR_PI / 180.;      // Converts degrees to radians
 
 class CGrTransform  
 {
@@ -122,5 +114,3 @@ inline CGrTransform Transpose(const CGrTransform &t)
    CGrTransform r(t);
    return r.Transpose();
 }
-
-#endif

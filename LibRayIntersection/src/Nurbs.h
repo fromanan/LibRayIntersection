@@ -4,17 +4,10 @@
 //                This class is used to describe and draw a NURBS surface.
 //
 
-#if !defined(AFX_NURBS_H__C71DE3EB_FDE1_4D39_BB30_425A2C6BE7C7__INCLUDED_)
-#define AFX_NURBS_H__C71DE3EB_FDE1_4D39_BB30_425A2C6BE7C7__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "grafx.h"
 
-#include <vector>
 #include "Texture.h"	// Added by ClassView
 
 class CNurbs  
@@ -91,5 +84,3 @@ private:
    std::vector<GLfloat>   m_texuknots;
    std::vector<GLfloat>   m_texvknots;
 };
-
-#endif // !defined(AFX_NURBS_H__C71DE3EB_FDE1_4D39_BB30_425A2C6BE7C7__INCLUDED_)

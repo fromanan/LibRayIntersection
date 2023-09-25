@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "ShaderHeaders.h"
+#include "grafx.h"
 
 // class CGrPoint
 // Class for a graphics point or vector.  

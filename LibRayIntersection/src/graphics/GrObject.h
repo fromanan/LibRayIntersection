@@ -5,12 +5,9 @@
 // Version :       2-18-01 1.01 Revisions to make CGrPtr work in vectors
 //
 
-#if !defined(AFX_GROBJECT_H__F47A21EF_E490_462E_BB99_B32A3B954CF6__INCLUDED_)
-#define AFX_GROBJECT_H__F47A21EF_E490_462E_BB99_B32A3B954CF6__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include "grafx.h"
 
 #include "GrPoint.h"
 #include "GrTransform.h"
@@ -295,7 +292,3 @@ private:
     float m_emission[4];
     float m_shininess;
 };
-
-
-
-#endif // !defined(AFX_GROBJECT_H__F47A21EF_E490_462E_BB99_B32A3B954CF6__INCLUDED_)

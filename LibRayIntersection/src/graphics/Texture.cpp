@@ -8,12 +8,8 @@
 //
 
 #include "stdafx.h"
+
 #include "Texture.h"
-#include <cassert>
-
-using namespace std;
-
-#include <GL/glu.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -338,6 +338,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\BoundingBox.h" />
+    <ClInclude Include="src\graphics\grafx.h" />
     <ClInclude Include="src\IntersectionObject.h" />
     <ClInclude Include="src\KdNode.h" />
     <ClInclude Include="src\Nurbs.h" />
@@ -346,7 +347,6 @@
     <ClInclude Include="src\RayIntersectionD.h" />
     <ClInclude Include="src\Rayp.h" />
     <ClInclude Include="src\Resource.h" />
-    <ClInclude Include="src\ShaderHeaders.h" />
     <ClInclude Include="src\Triangle.h" />
     <ClInclude Include="src\graphics\GrCamera.h" />
     <ClInclude Include="src\graphics\GrObject.h" />

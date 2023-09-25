@@ -6,16 +6,12 @@
 // Version :      See Texture.cpp
 //
 
-#if !defined(_GRTEXTURE_H)
-#define _GRTEXTURE_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include "grafx.h"
 
 #include "GrObject.h"
 #include <fstream>
-#include <GL/gl.h>
 #include <valarray>
 
 class CGrTexture : public CGrObject
@@ -87,5 +83,3 @@ private:
     int     m_width;
     BYTE  **m_image;
 };
-
-#endif 

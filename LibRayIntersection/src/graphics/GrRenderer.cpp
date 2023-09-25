@@ -7,7 +7,9 @@
 //
 
 #include "stdafx.h"
+
 #include "GrRenderer.h"
+
 #include "GrTexture.h"
 
 CGrRenderer::CGrRenderer()

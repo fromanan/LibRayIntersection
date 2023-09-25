@@ -6,16 +6,10 @@
 //                For further information, see RayIntersection.cpp
 //
 
-#ifndef _RAYINTERSECTIOND_H
-#define _RAYINTERSECTIOND_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <list>
 #include <vector>
-
 
 #include "graphics/RayIntersection.h"
 #include "Polygon.h"
@@ -109,5 +103,3 @@ private:
     CKdNode            *m_root;
 
 };
-
-#endif
