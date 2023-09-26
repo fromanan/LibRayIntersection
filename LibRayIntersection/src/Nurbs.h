@@ -15,14 +15,14 @@ class CNurbs
 public:
 	void SetKnotV(int v, double k);
 	void SetKnotU(int u, double k);
-	void SetControlPoint(int u, int v, double x, double y, double z);
+	void SetControlPoint(int u, int v, double x, double y, double z) const;
 	bool LoadTextureFile(const char *p_file);
 	void DrawControlPoints();
 	CNurbs();
 	virtual ~CNurbs();
 
 	void SetUV(int p_u, int p_v);
-   void SetTextureMap(bool p) {m_texturemap = p;}
+	void SetTextureMap(const bool p) {m_texturemap = p;}
 
 	void DrawSurface();
 
@@ -33,54 +33,54 @@ private:
 	void OnFirstDraw();
 	void AllocateNurbsControlPoints(int p_usize, int p_vsize);
 	void DeleteNurbsControlPoints();
-   void Box(GLdouble p_x, GLdouble p_y, GLdouble p_z);
+	void Box(GLdouble p_x, GLdouble p_y, GLdouble p_z);
 
-   void KnotUniform(std::vector<GLfloat> &p_knots);
-   void KnotInterpolate(std::vector<GLfloat> &p_knots);
+	void KnotUniform(std::vector<GLfloat> &p_knots);
+	void KnotInterpolate(std::vector<GLfloat> &p_knots);
 
 	GLUnurbsObj      *m_nurbs;
 
 	bool              m_texturemap;
 	CTexture          m_texture;
 	bool              m_firstdraw;
-   bool              m_controlpoints;
+	bool              m_controlpoints;
 
-   // In this application we are dynamically allocating the
-   // points array for our NURBS surface.  We can set various
-   // different things depending on the size we make these
-   // arrays.  Note that the allocation MUST be contiguous
-   // for OpenGL to be able to deal with it.
+	// In this application we are dynamically allocating the
+	// points array for our NURBS surface.  We can set various
+	// different things depending on the size we make these
+	// arrays.  Note that the allocation MUST be contiguous
+	// for OpenGL to be able to deal with it.
 
-   int               m_usize;    // What's the U dimension?
-   int               m_vsize;    // What's the V dimension?
+	int               m_usize;    // What's the U dimension?
+	int               m_vsize;    // What's the V dimension?
 
-   // 3D point for our points array
-   struct Point3
-   {
-      Point3() {}
-      operator float *() {return m;}
+	// 3D point for our points array
+	struct Point3
+	{
+		Point3() {}
+		operator float *() { return m; }
 
-   private:
-      float m[3];
-   };
+	private:
+		float m[3];
+	};
 
-   // 2D point for our texture points array
-   struct Point2
-   {
-      Point2() {}
-      operator float *() {return m;}
+	// 2D point for our texture points array
+	struct Point2
+	{
+		Point2() {}
+		operator float *() { return m; }
 
-   private:
-      float m[2];
-   };
+	private:
+		float m[2];
+	};
 
-   // The points array and knots
-   Point3         **m_points;
-   std::vector<GLfloat>   m_uknots;
-   std::vector<GLfloat>   m_vknots;
+	// The points array and knots
+	Point3         **m_points;
+	std::vector<GLfloat>   m_uknots;
+	std::vector<GLfloat>   m_vknots;
 
-   // The texture points array and knots
-   Point2         **m_texpoints;
-   std::vector<GLfloat>   m_texuknots;
-   std::vector<GLfloat>   m_texvknots;
+	// The texture points array and knots
+	Point2         **m_texpoints;
+	std::vector<GLfloat>   m_texuknots;
+	std::vector<GLfloat>   m_texvknots;
 };

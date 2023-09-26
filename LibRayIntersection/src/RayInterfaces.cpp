@@ -7,19 +7,11 @@
 
 #include "graphics/RayInterfaces.h"
 
-IMaterial::IMaterial()
-{
-}
+IMaterial::IMaterial() = default;
 
-IMaterial::~IMaterial()
-{
-}
+IMaterial::~IMaterial() = default;
 
-ITexture::ITexture()
-{
-}
+ITexture::ITexture() = default;
 
-ITexture::~ITexture()
-{
-}
+ITexture::~ITexture() = default;
 

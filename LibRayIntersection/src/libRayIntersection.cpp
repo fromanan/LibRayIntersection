@@ -33,12 +33,10 @@
 //		details.
 //
 
-
 // ClibRayIntersectionApp
 
 BEGIN_MESSAGE_MAP(ClibRayIntersectionApp, CWinApp)
 END_MESSAGE_MAP()
-
 
 // ClibRayIntersectionApp construction
 
@@ -48,11 +46,9 @@ ClibRayIntersectionApp::ClibRayIntersectionApp()
 	// Place all significant initialization in InitInstance
 }
 
-
 // The one and only ClibRayIntersectionApp object
 
 ClibRayIntersectionApp theApp;
-
 
 // ClibRayIntersectionApp initialization
 

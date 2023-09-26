@@ -28,14 +28,14 @@ public:
 	virtual ~CGrCamera();
 
     //! Number of mouse buttons supported
-    static const int NumButtons = 3;
+    static constexpr int NumButtons = 3;
 
     //! Set the speed of the mouse wheel zoom.
     /*! This function determines the speed of the zoom when the 
         mouse wheel is moved. The default value if 0.01, which is chosen
         to given a reasonable rate of zoom. The zoom uses the MoveIn function,
         which is dependent on distance, zooming faster when farther away. */
-    void SetWheelSpeed(double speed) {m_wheelSpeed = speed;}
+    void SetWheelSpeed(const double speed) {m_wheelSpeed = speed;}
 
     //! Get the mouse wheel zoom speed.
     double GetWheelSpeed() const {return m_wheelSpeed;}
@@ -46,7 +46,7 @@ public:
         at the same time (chording). The default value if 0.01, which is chosen
         to given a reasonable rate of zoom. The zoom uses the MoveIn function,
         which is dependent on distance, zooming faster when farther away. */
-    void SetChordSpeed(double speed) {m_chordSpeed = speed;}
+    void SetChordSpeed(const double speed) {m_chordSpeed = speed;}
 
     //! Get the mouse wheel chord speed.
     double GetChordSpeed() const {return m_chordSpeed;}
@@ -201,9 +201,9 @@ public:
         ZFar at a point twice as far from the camera as the center. Larger values move the 
         ZFar plane farther from the camera. The default value if 4.
         \param r New ZFar range value */
-    void SetZFarRange(double r) {m_zFarRange = r;}
+    void SetZFarRange(const double r) {m_zFarRange = r;}
 
-    void FieldOfView(double f) {m_fieldofview = f;}
+    void FieldOfView(const double f) {m_fieldofview = f;}
     double FieldOfView() const {return m_fieldofview;}
 
     const double *Eye() const {return m_eye;}
@@ -222,8 +222,7 @@ public:
     double ZNear() const {return CameraDistance() * m_zNearRange;}
     double ZFar() const {return CameraDistance() * m_zFarRange;}
 
-
-    //! Posible modes for each mouse button
+    //! Possible modes for each mouse button
     enum eMouseMode {PANTILT=10, ROLLMOVE=11, PITCHYAW=12, DOLLYXY=13, MOVE=14};
 
     //! Set the mode for each mouse button
@@ -236,7 +235,7 @@ public:
     void SetMouseMode(eMouseMode m, int button=1);
 
     //! Get the current mouse mode
-    eMouseMode GetMouseMode(int b=1) const {return m_mousemode[b-1];}
+    eMouseMode GetMouseMode(const int b=1) const {return m_mousemode[b-1];}
 
     //! Handle a mouse press
     /*! This function should be called when the mouse button is
@@ -269,7 +268,7 @@ void CChildView::OnRButtonDown(UINT nFlags, CPoint point)
         is here: \code
 void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 {
-    if(m_camera.MouseMove(point.x, point.y, nFlags))
+    if (m_camera.MouseMove(point.x, point.y, nFlags))
          Invalidate();
 
     COpenGLWnd ::OnMouseMove(nFlags, point);
@@ -280,7 +279,7 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
         \param nFlags The mouse flags as provided by the Windows mouse move event
         \return True if the viewpoint was changed and the display should be invalidated
 */
-	bool MouseMove(int x, int y, UINT nFlags = (MK_LBUTTON | MK_RBUTTON));
+	bool MouseMove(int x, int y, UINT nFlags = MK_LBUTTON | MK_RBUTTON);
 
     //! Handle a mouse wheel zoom
     /*! Handle the mouse wheel, implementing a zoom. The zoom speed 
@@ -299,9 +298,9 @@ BOOL CChildView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
     void MouseWheel(short zDelta);
 
     //! This function implements the gluLookAt() function using the current camera parameters
-    inline void gluLookAt() {::gluLookAt(m_eye[0], m_eye[1], m_eye[2], 
-                                  m_center[0], m_center[1], m_center[2],
-                                  m_up[0], m_up[1], m_up[2]);}
+    inline void gluLookAt() const {::gluLookAt(m_eye[0], m_eye[1], m_eye[2], 
+                 m_center[0], m_center[1], m_center[2],
+                 m_up[0], m_up[1], m_up[2]);}
 
     //! Apply the camera settings to OpenGL
     /*! This function sets up the camera projection and model view matrices
@@ -326,7 +325,7 @@ void CGrCamera::Apply(int width, int height, bool noidentity)
 {
     // Configure the projection matrix
     glMatrixMode(GL_PROJECTION);
-    if(!noidentity)
+    if (!noidentity)
         glLoadIdentity();
 
     ::gluPerspective(m_fieldofview, 
@@ -335,7 +334,7 @@ void CGrCamera::Apply(int width, int height, bool noidentity)
 
     // Configure the modelview matrix
     glMatrixMode(GL_MODELVIEW);
-    if(!noidentity)
+    if (!noidentity)
         glLoadIdentity();
 
     ::gluLookAt(m_eye[0], m_eye[1], m_eye[2], 
@@ -344,7 +343,7 @@ void CGrCamera::Apply(int width, int height, bool noidentity)
 }
 \endcode
     */
-    void Apply(int width, int height, bool noidentity=false);
+    void Apply(int width, int height, bool noidentity=false) const;
 
 private:
 	void DollyHelper(double m[4][4], double x, double y, double z);
@@ -375,10 +374,10 @@ private:
     double          m_cameray[3];
     double          m_cameraz[3];
 
-    void RotCamera(double m[4][4]);
-    void UnRotCamera(double m[4][4]);
-    void RotCameraX(double m[4][4], double a);
-    void RotCameraY(double m[4][4], double a);
-    void RotCameraZ(double m[4][4], double a);
+    void RotCamera(double m[4][4]) const;
+    void UnRotCamera(double m[4][4]) const;
+    void RotCameraX(double m[4][4], double a) const;
+    void RotCameraY(double m[4][4], double a) const;
+    void RotCameraZ(double m[4][4], double a) const;
 };
 

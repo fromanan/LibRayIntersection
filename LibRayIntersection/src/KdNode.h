@@ -14,7 +14,7 @@ class CKdNode
 {
 public:
     CKdNode(CRayIntersectionD *user);
-    virtual ~CKdNode(void);
+    virtual ~CKdNode();
     
     friend class CRayIntersectionD;
 
@@ -28,8 +28,7 @@ public:
 private:
     CKdNode();
 
-    CRayIntersectionD *GetUser() {return mUser;}
-
+    CRayIntersectionD *GetUser() const {return mUser;}
     CRayIntersectionD *mUser;
 
     // Members of this node (all of the polygons in the node)
@@ -52,15 +51,15 @@ private:
     {
         enum Types {BEGIN, END, PLANAR};
 
-        SplitItem(CKdNode::Member *m, Types t, double v) :
+        SplitItem(Member*m, const Types t, const double v) :
             mMember(m), m_type(t), m_value(v) {}
 
-        CKdNode::Member *mMember;    // The member this is for
+        Member*mMember;    // The member this is for
 
         Types   m_type;                 // Type of entry
         double  m_value;                // Value for a dimension
 
-        bool operator<(const SplitItem &s) {return m_value < s.m_value;}
+        bool operator<(const SplitItem &s) const {return m_value < s.m_value;}
     };
 
     double  m_splitPoint;       // Split point

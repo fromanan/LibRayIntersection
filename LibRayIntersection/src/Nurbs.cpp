@@ -19,7 +19,6 @@ static char THIS_FILE[]=__FILE__;
 // Name :         CNurbs::CNurbs()
 // Description :  Constructor.  Initialize this object.
 //
-
 CNurbs::CNurbs()
 {
    m_controlpoints = true;    // Default is to draw the 
@@ -31,11 +30,10 @@ CNurbs::CNurbs()
    // m_texture.LoadFile("dive.bmp");
 
    // Initially set these values to defaults of nothing
-   m_points = NULL;
-   m_texpoints = NULL;
+   m_points = nullptr;
+   m_texpoints = nullptr;
    m_usize = 0;
    m_vsize = 0;
-
 }
 
 CNurbs::~CNurbs()
@@ -43,24 +41,22 @@ CNurbs::~CNurbs()
    DeleteNurbsControlPoints();
 }
 
-
 //
 // Name :         CNurbs::DrawSurface()
 // Description :  Draw the surface.   This function 
 //                is the main way we initiate the drawing process.
 //
-
 void CNurbs::DrawSurface()
 {
-   if(m_usize == 0 || m_vsize == 0)
+   if (m_usize == 0 || m_vsize == 0)
       return;
 
-   if(m_firstdraw)
+   if (m_firstdraw)
       OnFirstDraw();
 
    glEnable(GL_AUTO_NORMAL);
 
-   if(m_texturemap && !m_texture.Empty())
+   if (m_texturemap && !m_texture.Empty())
    {
       glEnable(GL_TEXTURE_2D);
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -70,19 +66,19 @@ void CNurbs::DrawSurface()
    gluBeginSurface(m_nurbs);
 
    gluNurbsSurface(m_nurbs,
-                   m_usize + 4, &m_uknots[0],
-                   m_vsize + 4, &m_vknots[0],
+                   m_usize + 4, m_uknots.data(),
+                   m_vsize + 4, m_vknots.data(),
                    m_vsize * 3,
                    3,
                    &m_points[0][0][0],
                    4, 4,
                    GL_MAP2_VERTEX_3);
 
-   if(m_texturemap)
+   if (m_texturemap)
    {
       gluNurbsSurface(m_nurbs,
-                      m_usize + 4, &m_texuknots[0],
-                      m_vsize + 4, &m_texvknots[0],
+                      m_usize + 4, m_texuknots.data(),
+                      m_vsize + 4, m_texvknots.data(),
                       m_vsize * 2,
                       2,
                       &m_texpoints[0][0][0],
@@ -97,25 +93,23 @@ void CNurbs::DrawSurface()
    glDisable(GL_AUTO_NORMAL);
 }
 
-
 //
 // Name :         CNurbs::DrawControlPoints()
 // Description :  Draw the NURBS control points.  This is a
 //                handy function for debugging problems.
 //
-
 void CNurbs::DrawControlPoints()
 {
-   if(m_firstdraw)
+   if (m_firstdraw)
       OnFirstDraw();
 
-   for(int iu=0;  iu<m_usize;  iu++)
+   for (int iu=0;  iu<m_usize;  iu++)
    {
-      for(int iv=0;  iv<m_vsize;  iv++)
+      for (int iv=0;  iv<m_vsize;  iv++)
       {
-         GLfloat *p = m_points[iu][iv];
+         const GLfloat *p = m_points[iu][iv];
 
-         const double PSIZE = 0.125;      // Size of my control point blocks
+         constexpr double PSIZE = 0.125;      // Size of my control point blocks
 
          glPushMatrix();
          glTranslated(p[0] - PSIZE / 2, p[1] - PSIZE / 2, p[2] - PSIZE / 2);
@@ -127,13 +121,10 @@ void CNurbs::DrawControlPoints()
 
 }
 
-
-
 //
 // Name :         CNurbs::OnFirstDraw()
 // Description :  Takes care of setting up for drawing...
 //
-
 void CNurbs::OnFirstDraw()
 {
    m_firstdraw = false;
@@ -144,7 +135,6 @@ void CNurbs::OnFirstDraw()
    gluNurbsProperty(m_nurbs, GLU_DISPLAY_MODE, GLU_FILL);
 }
 
-
 //
 // Name :         CNurbs::SetUV(int p_u, int p_v)
 // Description :  Set the U and V control point counts.
@@ -152,22 +142,19 @@ void CNurbs::OnFirstDraw()
 //                I wanted a public portal in case I change the
 //                functionality later.
 //
-
-void CNurbs::SetUV(int p_u, int p_v)
+void CNurbs::SetUV(const int p_u, const int p_v)
 {
    AllocateNurbsControlPoints(p_u, p_v);
 }
-
 
 //
 // Name :         CNurbs::CreateCylinder()
 // Description :  Create a simple cylinder with open ends.
 //
-
-void CNurbs::CreateCylinder(double p_radius, double p_height, bool p_seal)
+void CNurbs::CreateCylinder(const double p_radius, const double p_height, const bool p_seal)
 {
    // Make sure we are allocated first...
-   if(m_usize == 0 || m_vsize == 0)
+   if (m_usize == 0 || m_vsize == 0)
       return;
 
    int u, v;
@@ -177,23 +164,21 @@ void CNurbs::CreateCylinder(double p_radius, double p_height, bool p_seal)
    //
 
    // v is along the length of the cylinder
-   for(v=0;  v<m_vsize;  v++)
+   for (v=0;  v<m_vsize;  v++)
    {
       // u is around the radius...
-      for(u=0;  u<m_usize;  u++)
+      for (u=0;  u<m_usize;  u++)
       {
-         m_points[u][v][0] = -p_radius * sin(double(u) / double(m_usize-3) * 6.2830);
-         m_points[u][v][1] = double(v) / double(m_vsize - 1) * p_height;
-         m_points[u][v][2] = -p_radius * cos(double(u) / double(m_usize-3) * 6.2830);
+         m_points[u][v][0] = -p_radius * sin(static_cast<double>(u) / static_cast<double>(m_usize - 3) * GR_PI2);
+         m_points[u][v][1] = static_cast<double>(v) / static_cast<double>(m_vsize - 1) * p_height;
+         m_points[u][v][2] = -p_radius * cos(static_cast<double>(u) / static_cast<double>(m_usize - 3) * GR_PI2);
 
-         if(p_seal && (v == 0 || v == m_vsize - 1))
+         if (p_seal && (v == 0 || v == m_vsize - 1))
          {
             m_points[u][v][0] = 0;
             m_points[u][v][2] = 0;
          }
-
       }
-
    }
 
    // We want uniform sampling in the u dimension
@@ -205,15 +190,14 @@ void CNurbs::CreateCylinder(double p_radius, double p_height, bool p_seal)
    //
    // Fill in the texture data points
    //
-
-   for(v=0;  v<m_vsize;  v++)
+   for (v=0;  v<m_vsize;  v++)
    {
       // u is around the radius...
-      for(u=0;  u<m_usize;  u++)
+      for (u=0;  u<m_usize;  u++)
       {
          // Texture points
-         m_texpoints[u][v][0] = double(u) / double(m_usize - 1);
-         m_texpoints[u][v][1] = double(v) / double(m_vsize - 1);
+         m_texpoints[u][v][0] = static_cast<double>(u) / static_cast<double>(m_usize - 1);
+         m_texpoints[u][v][1] = static_cast<double>(v) / static_cast<double>(m_vsize - 1);
       }
    }
 
@@ -224,7 +208,6 @@ void CNurbs::CreateCylinder(double p_radius, double p_height, bool p_seal)
    KnotInterpolate(m_texvknots);
 }
 
-
 //
 // Name :         CNurbs::AllocateNurbsControlPoints()
 // Description :  In this application we have a variable-sized NURBS surfaces.
@@ -234,17 +217,16 @@ void CNurbs::CreateCylinder(double p_radius, double p_height, bool p_seal)
 // Parameters :   p_usize - Number of control points in the U dimension
 //                p_vsize - Number of control points in the V dimension.
 //
-
 void CNurbs::AllocateNurbsControlPoints(int p_usize, int p_vsize)
 {
    // Don't allocate if we are already allocated...
-   if(m_usize == p_usize && m_vsize == p_vsize)
+   if (m_usize == p_usize && m_vsize == p_vsize)
       return;
 
    // Delete any existing allocation
    DeleteNurbsControlPoints();
 
-   if(p_usize == 0 || p_vsize == 0)
+   if (p_usize == 0 || p_vsize == 0)
       return;
 
    m_usize = p_usize;
@@ -257,7 +239,7 @@ void CNurbs::AllocateNurbsControlPoints(int p_usize, int p_vsize)
    m_texpoints = new Point2 *[m_usize];
    m_texpoints[0] = new Point2[m_usize * m_vsize];
 
-   for(int i=1;  i<m_usize;  i++)
+   for (int i=1;  i<m_usize;  i++)
    {
       m_points[i] = m_points[0] + i * m_vsize;
       m_texpoints[i] = m_texpoints[0] + i * m_vsize;
@@ -275,29 +257,27 @@ void CNurbs::AllocateNurbsControlPoints(int p_usize, int p_vsize)
    KnotUniform(m_texvknots);
 }
 
-
 //
 // Name :         CNurbs::DeleteNurbsControlPoints()
 // Description :  We have a dynamic array that stores the NURBS control
 //                points.  This function deletes that allocation.
 //
-
 void CNurbs::DeleteNurbsControlPoints()
 {
-   if(m_points)
+   if (m_points)
    {
       delete [] m_points[0];
       delete [] m_points;
 
-      m_points = NULL;
+      m_points = nullptr;
    }
 
-   if(m_texpoints)
+   if (m_texpoints)
    {
       delete [] m_texpoints[0];
       delete [] m_texpoints;
 
-      m_texpoints = NULL;
+      m_texpoints = nullptr;
    }
 
    m_usize = 0;
@@ -308,8 +288,7 @@ void CNurbs::DeleteNurbsControlPoints()
 // Name :         CNurbs::SetControlPoint()
 // Description :  Sets the value of a control point.
 //
-
-void CNurbs::SetControlPoint(int u, int v, double x, double y, double z)
+void CNurbs::SetControlPoint(const int u, const int v, const double x, const double y, const double z) const
 {
    assert(u >= 0);
    assert(u < m_usize);
@@ -325,8 +304,7 @@ void CNurbs::SetControlPoint(int u, int v, double x, double y, double z)
 // Name :         CNurbs::SetKnotU()
 // Description :  Set a U knot value.
 //
-
-void CNurbs::SetKnotU(int u, double k)
+void CNurbs::SetKnotU(const int u, const double k)
 {
    assert(u >= 0);
    assert(u < m_usize + 4);
@@ -334,13 +312,11 @@ void CNurbs::SetKnotU(int u, double k)
    m_uknots[u] = k;
 }
 
-
 //
 // Name :         CNurbs::SetKnotV()
 // Description :  Set a V knot value.
 //
-
-void CNurbs::SetKnotV(int v, double k)
+void CNurbs::SetKnotV(const int v, const double k)
 {
    assert(v >= 0);
    assert(v < m_vsize + 4);
@@ -348,43 +324,36 @@ void CNurbs::SetKnotV(int v, double k)
    m_vknots[v] = k;
 }
 
-
 //
 // Name :         CNurbs::KnotUniform()
 // Description :  Fill in a knots vector with uniformly space knots.
 //
-
 void CNurbs::KnotUniform(std::vector<GLfloat> &p_knots)
 {
-   for(int i=0;  i<p_knots.size();  i++)
+   for (int i = 0; i < p_knots.size(); i++)
       p_knots[i] = i;
 }
 
-
 //
-// Name :         CNurbs::KnotInterplote()
+// Name :         CNurbs::KnotInterpolate()
 // Description :  Fill in a knots vector with knots that will
 //                interpolate the end points.
 //
-
 void CNurbs::KnotInterpolate(std::vector<GLfloat> &p_knots)
 {
    int i;
    int k = 0;
 
-   for(i=0;  i<4;  i++)
+   for (i=0;  i<4;  i++)
       p_knots[i] = 0;
 
    k++;
-   for( ; i<p_knots.size() - 4;  i++)
+   for (; i < p_knots.size() - 4;  i++)
       p_knots[i] = k++;
 
-   for( ; i<p_knots.size();  i++)
+   for (; i < p_knots.size();  i++)
       p_knots[i] = k;
 }
-
-
-
 
 //
 //        Name : CNurbs::Box()
@@ -394,17 +363,16 @@ void CNurbs::KnotInterpolate(std::vector<GLfloat> &p_knots)
 //      Origin : The back corner is at 0, 0, 0, and the box 
 //               is entirely in the positive octant.
 //
-
-void CNurbs::Box(GLdouble p_x, GLdouble p_y, GLdouble p_z)
+void CNurbs::Box(const GLdouble p_x, const GLdouble p_y, const GLdouble p_z)
 {
-   GLdouble a[] = {0., 0., p_z};
-   GLdouble b[] = {p_x, 0., p_z};
-   GLdouble c[] = {p_x, p_y, p_z};
-   GLdouble d[] = {0., p_y, p_z};
-   GLdouble e[] = {0., 0., 0.};
-   GLdouble f[] = {p_x, 0., 0.};
-   GLdouble g[] = {p_x, p_y, 0.};
-   GLdouble h[] = {0., p_y, 0.};
+   const GLdouble a[] = {0., 0., p_z};
+   const GLdouble b[] = {p_x, 0., p_z};
+   const GLdouble c[] = {p_x, p_y, p_z};
+   const GLdouble d[] = {0., p_y, p_z};
+   constexpr GLdouble e[] = {0., 0., 0.};
+   const GLdouble f[] = {p_x, 0., 0.};
+   const GLdouble g[] = {p_x, p_y, 0.};
+   const GLdouble h[] = {0., p_y, 0.};
 
    // Front
    glBegin(GL_QUADS);

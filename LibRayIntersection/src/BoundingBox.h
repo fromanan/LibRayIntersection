@@ -5,10 +5,10 @@
 class CBoundingBox
 {
 public:
-    CBoundingBox(void);
+    CBoundingBox();
     CBoundingBox(const CGrVector &p)
         {mBounds[0].Set(p);  mBounds[1].Set(p);}
-    virtual ~CBoundingBox(void);
+    virtual ~CBoundingBox();
 
     void SetEmpty() {mBounds[0].Set(0, 0, 0);  mBounds[1].Set(0, 0, 0);}
     void Set(const CGrVector &p) {mBounds[0].Set(p);  mBounds[1].Set(p);}
@@ -17,17 +17,17 @@ public:
     void Include(const CBoundingBox &b) {Include(b.Min()); Include(b.Max());}
 
     const CGrVector &Max() const {return mBounds[1];}
-    const double Max(int d) const {return mBounds[1][d];}
+    double Max(const int d) const {return mBounds[1][d];}
     const CGrVector &Min() const {return mBounds[0];}
-    const double Min(int d) const {return mBounds[0][d];}
-    CGrVector Extent() const {return (Max() - Min());}
-    double Extent(int d) const {return mBounds[1][d] - mBounds[0][d];}
+    double Min(const int d) const {return mBounds[0][d];}
+    CGrVector Extent() const {return Max() - Min();}
+    double Extent(const int d) const {return mBounds[1][d] - mBounds[0][d];}
     double ExtentX() const {return mBounds[1].X() - mBounds[0].X();}
     double ExtentY() const {return mBounds[1].Y() - mBounds[0].Y();}
     double ExtentZ() const {return mBounds[1].Z() - mBounds[0].Z();}
 
-    void SetMinD(int d, double v) {mBounds[0][d] = v;}
-    void SetMaxD(int d, double v) {mBounds[1][d] = v;}
+    void SetMinD(const int d, const double v) {mBounds[0][d] = v;}
+    void SetMaxD(const int d, const double v) {mBounds[1][d] = v;}
 
     void IntersectWith(const CBoundingBox &box);
     bool IntersectTest(const CRayp &ray, double t0=0, double t1=1e10) const;

@@ -11,22 +11,22 @@
 class CRayp
 {
 public:
-    ~CRayp(void);
+    ~CRayp();
 
     CRayp(const CRay &r);
 
     const CGrVector &Origin() const {return m_o;}
-    const double Origin(int d) const {return m_o[d];}
+    double Origin(const int d) const {return m_o[d];}
     const CGrVector &Direction() const {return m_d;}
-    const double Direction(int d) const {return m_d[d];}
+    double Direction(const int d) const {return m_d[d];}
     CRayp &operator=(const CRay &r) {m_o = r.Origin(); m_d = r.Direction(); return *this;}
-    CGrVector PointOnRay(double t) const {return m_o + m_d * t;}
+    CGrVector PointOnRay(const double t) const {return m_o + m_d * t;}
 
     // Bounding box intersection support
     const CGrVector &InvDirection() const {return m_invDirection;}
 
 private:
-    CRayp();
+    CRayp() = delete;
 
     CGrVector    m_o;
     CGrVector    m_d;

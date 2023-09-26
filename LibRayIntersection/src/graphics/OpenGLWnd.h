@@ -24,30 +24,27 @@ public:
 
     // Overrides
     // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(COpenGLWnd)
 protected:
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-    //}}AFX_VIRTUAL
+    BOOL PreCreateWindow(CREATESTRUCT& cs) override;
 
     // Implementation
 public:
     void OnSaveImage();
-    void GetSize(int &p_width, int &p_height);
+    void GetSize(int &p_width, int &p_height) const;
     bool ObtainPixels(GLbyte **&p_pixels);
-    virtual ~COpenGLWnd();
+    ~COpenGLWnd() override;
 
-    HGLRC HGLRc() {return m_hrc;}
+    HGLRC HGLRc() const {return m_hrc;}
 
     // Generated message map functions
 protected:
     void SetDoubleBuffer(bool p_doublebuffer);
     bool GetDoubleBuffer() const {return m_doublebuffer;}
 
-    //{{AFX_MSG(COpenGLWnd)
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnPaint();
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-    //}}AFX_MSG
+    
     DECLARE_MESSAGE_MAP()
 
 private:
@@ -63,7 +60,7 @@ private:
    	//
     // Support for generating RGB color palette
     //
-    unsigned char ComponentFromIndex(int i, UINT nbits, UINT shift) ;
+    static unsigned char ComponentFromIndex(int i, UINT nbits, UINT shift) ;
 
     static unsigned char   m_oneto8[2];
     static unsigned char   m_twoto8[4];
@@ -71,12 +68,3 @@ private:
     static int             m_defaultOverride[13];
     static PALETTEENTRY    m_defaultPalEntry[20];
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "winmm.lib")

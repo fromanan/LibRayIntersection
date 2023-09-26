@@ -20,13 +20,12 @@
 using namespace std;
 
 // The surface area computation algorithm.  
-inline double AreaCompute(const CGrVector &p)
+inline double AreaCompute(const CGrVector& p)
 {
     return p.X() * p.Y() + p.X() * p.Z() + p.Y() * p.Z();
 }
 
-const double TINY = 1e-10;          // A small value to avoid roundoff errors
-
+constexpr double TINY = 1e-10; // A small value to avoid roundoff errors
 
 // 
 // To use:
@@ -45,7 +44,6 @@ const double TINY = 1e-10;          // A small value to avoid roundoff errors
 // 6.  Call IntersectInfo() to get intersection information for rendering
 //
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -59,9 +57,9 @@ CRayIntersectionD::CRayIntersectionD()
     m_minLeaf = 3;
 
     // Kd Tree version
-    m_root = NULL;          // Root is initially empty
+    m_root = nullptr; // Root is initially empty
 
-    Clear();           // This will clear everything else
+    Clear(); // This will clear everything else
 }
 
 CRayIntersectionD::~CRayIntersectionD()
@@ -74,8 +72,7 @@ CRayIntersectionD::~CRayIntersectionD()
 // Name :         CRayIntersectionD::SaveStats()
 // Description :  Function to spit out some statistics to a file named stats.txt
 //
-
-void CRayIntersectionD::SaveStats()
+void CRayIntersectionD::SaveStats() const
 {
     ofstream str("stats.txt");
     str << "Polygons:  " << m_polys.size() << endl;
@@ -85,19 +82,19 @@ void CRayIntersectionD::SaveStats()
     str << "Intersection Tests:  " << m_statTests << endl;
     str << "Object Tests:  " << m_statObjTests << endl;
     str << "Surface Tests:  " << m_statSurfaceTests << endl;
-    str << "Average:  " << double(m_statSurfaceTests) / m_statTests << endl;
+    str << "Average:  " << static_cast<double>(m_statSurfaceTests) / m_statTests << endl;
     str << "One child:  " << m_statOneChild << endl;
 }
 
 void CRayIntersectionD::Clear()
 {
     delete m_root;
-    m_root = NULL;
+    m_root = nullptr;
     m_polys.clear();
     m_triangles.clear();
     m_mark = 1;
     m_loading = CRayIntersection::None;
-    m_loadingObject = NULL;
+    m_loadingObject = nullptr;
     m_sceneBB.SetEmpty();
 
     // Zero the stats
@@ -120,45 +117,37 @@ void CRayIntersectionD::Clear()
 // Name :         CRayIntersectionD::Initialize()
 // Description :  Initialize the system to begin receiving polygons.
 //
-
 void CRayIntersectionD::Initialize()
 {
     Clear();
-
 }
-
 
 //
 // Name :         CRayIntersectionD::PolygonBegin()
 // Description :  Begin the creation of a new polygon in the intersection system.
 //                This is the first step in the polygon creation process.
 //
-
 void CRayIntersectionD::PolygonBegin()
 {
     m_loading = CRayIntersection::Polygon;
-    m_polys.push_back(CPolygon()); 
+    m_polys.emplace_back();
     m_loadingObject = &m_polys.back();
 }
-
 
 void CRayIntersectionD::TriangleBegin()
 {
     m_loading = CRayIntersection::Triangle;
-    m_triangles.push_back(CTriangle()); 
+    m_triangles.emplace_back();
     m_loadingObject = &m_triangles.back();
 }
-
-
 
 //
 // Name :         CRayIntersectionD::Texture()
 // Description :  Assign a texture to the current polygon we are creating.
 //
-
-void CRayIntersectionD::Texture(ITexture *p_texture)
+void CRayIntersectionD::Texture(ITexture* p_texture) const
 {
-    assert(m_loadingObject != NULL);
+    assert(m_loadingObject != nullptr);
     m_loadingObject->SetTexture(p_texture);
 }
 
@@ -166,22 +155,19 @@ void CRayIntersectionD::Texture(ITexture *p_texture)
 // Name :         CRayIntersectionD::Material()
 // Description :  Set the material for the current polgon we are creating.
 //
-
-void CRayIntersectionD::Material(IMaterial *p_material)
+void CRayIntersectionD::Material(IMaterial* p_material) const
 {
-    assert(m_loadingObject != NULL);
+    assert(m_loadingObject != nullptr);
     m_loadingObject->SetMaterial(p_material);
 }
-
 
 //
 // Name :         CRayIntersectionD::Normal()
 // Description :  Add a normal to the current polygon we are creating.
 //
-
-void CRayIntersectionD::Normal(const CGrVector &p_normal)
+void CRayIntersectionD::Normal(const CGrVector& p_normal) const
 {
-    assert(m_loadingObject != NULL);
+    assert(m_loadingObject != nullptr);
     m_loadingObject->AddNormal(p_normal);
 }
 
@@ -189,33 +175,28 @@ void CRayIntersectionD::Normal(const CGrVector &p_normal)
 // Name :         CRayIntersectionD::TexVertex()
 // Description :  Add a texture vertex to the current polygon we are creating.
 //
-
-void CRayIntersectionD::TexVertex(const CGrVector &p_tvertex)
+void CRayIntersectionD::TexVertex(const CGrVector& p_tvertex) const
 {
-    assert(m_loadingObject != NULL);
+    assert(m_loadingObject != nullptr);
     m_loadingObject->AddTexVertex(p_tvertex);
 }
-
 
 //
 // Name :         CRayIntersectionD::Vertex()
 // Description :  Add a vertex to the current polygon we are creating.
 //
-
-void CRayIntersectionD::Vertex(const CGrVector &p_vertex)
+void CRayIntersectionD::Vertex(const CGrVector& p_vertex) const
 {
-    assert(m_loadingObject != NULL);
+    assert(m_loadingObject != nullptr);
     m_loadingObject->AddVertex(p_vertex);
 }
 
-
 void CRayIntersectionD::TriangleEnd()
 {
-    if(m_loading != CRayIntersection::Triangle)
+    if (m_loading != CRayIntersection::Triangle)
         return;
 
-    CTriangle &t = m_triangles.back();
-    if(!t.TriangleEnd())
+    if (CTriangle& t = m_triangles.back(); !t.TriangleEnd())
     {
         // Bad triangle, remove it
         m_triangles.pop_back();
@@ -227,14 +208,13 @@ void CRayIntersectionD::TriangleEnd()
 // Name :         CRayIntersectionD::PolygonEnd()
 // Description :  Indicate the end of a polygon creation.
 //
-
 void CRayIntersectionD::PolygonEnd()
 {
-    if(m_polys.empty())
+    if (m_polys.empty())
         return;
 
-    CPolygon &p = m_polys.back();
-    if(!p.PolygonEnd())
+    CPolygon& p = m_polys.back();
+    if (!p.PolygonEnd())
     {
         // Bad polygon, remove it
         m_polys.pop_back();
@@ -243,120 +223,125 @@ void CRayIntersectionD::PolygonEnd()
 
     // This is a test if the polygon is planer (or very near to it).
     // The intersection test does not work right for non-planer polygons.  
-    vector<CGrVector> &vertices = p.GetVertices();
-    if(vertices.size() == 3)
+    if (vector<CGrVector>& vertices = p.GetVertices(); vertices.size() == 3)
     {
         // This is a triangle. Treat it as such.
         CPolygon poly = m_polys.back();
         m_polys.pop_back();
 
-        vector<CGrVector>::iterator a = poly.GetVertices().begin();        // First vertex
-        vector<CGrVector>::iterator b = a;   b++;           // Second
-        vector<CGrVector>::iterator c = b;   c++;           // Third
+        auto a = poly.GetVertices().begin(); // First vertex
+        auto b = a;
+        ++b; // Second
+        auto c = b;
+        ++c; // Third
 
-        vector<CGrVector>::iterator an = poly.m_normals.begin();
-        vector<CGrVector>::iterator bn = an;     if(bn != poly.m_normals.end()) bn++;
-        vector<CGrVector>::iterator cn = bn;     if(cn != poly.m_normals.end()) cn++;
-        vector<CGrVector>::iterator at = poly.m_tvertices.begin();
-        vector<CGrVector>::iterator bt = at;     if(bt != poly.m_tvertices.end()) bt++;
-        vector<CGrVector>::iterator ct = bt;     if(ct != poly.m_tvertices.end()) ct++;
+        auto an = poly.m_normals.begin();
+        auto bn = an;
+        if (bn != poly.m_normals.end()) ++bn;
+        auto cn = bn;
+        if (cn != poly.m_normals.end()) ++cn;
+        auto at = poly.m_tvertices.begin();
+        auto bt = at;
+        if (bt != poly.m_tvertices.end()) ++bt;
+        auto ct = bt;
+        if (ct != poly.m_tvertices.end()) ++ct;
 
         // a, b, c is a triangle
         TriangleBegin();
         Material(poly.GetMaterial());
         Texture(poly.GetTexture());
 
-        if(at != poly.m_tvertices.end())
+        if (at != poly.m_tvertices.end())
             TexVertex(*at);
         Normal(*an);
         Vertex(*a);
 
-        if(bt != poly.m_tvertices.end())
+        if (bt != poly.m_tvertices.end())
             TexVertex(*bt);
-        if(bn != poly.m_normals.end()) 
+        if (bn != poly.m_normals.end())
             Normal(*bn);
         Vertex(*b);
 
-        if(ct != poly.m_tvertices.end())
+        if (ct != poly.m_tvertices.end())
             TexVertex(*ct);
-        if(cn != poly.m_normals.end()) 
+        if (cn != poly.m_normals.end())
             Normal(*cn);
         Vertex(*c);
 
         TriangleEnd();
     }
-    else if(vertices.size() > 3)
+    else if (vertices.size() > 3)
     {
-        vector<CGrVector>::iterator a = vertices.begin();
-        for(; a != vertices.end();  a++)
+        for (auto a = vertices.begin(); a != vertices.end(); ++a)
         {
-            double r = Dot3(p.GetNormal(), *a) + p.GetD();
-            if(r < -0.01 || r > 0.01)
+            if (double r = Dot3(p.GetNormal(), *a) + p.GetD(); r < -0.01 || r > 0.01)
             {
                 // Non-planer polygon.  Convert to a triangle fan.
                 CPolygon poly = m_polys.back();
                 m_polys.pop_back();
 
                 // Convert this to a triangle fan
-                a = poly.GetVertices().begin();        // First vertex
-                vector<CGrVector>::iterator b = a;   b++;
-                vector<CGrVector>::iterator c = b;   c++;
+                a = poly.GetVertices().begin(); // First vertex
+                auto b = a;
+                ++b;
+                auto c = b;
+                ++c;
 
-                vector<CGrVector>::iterator an = poly.m_normals.begin();
-                vector<CGrVector>::iterator bn = an;     if(bn != poly.m_normals.end()) bn++;
-                vector<CGrVector>::iterator cn = bn;     if(cn != poly.m_normals.end()) cn++;
-                vector<CGrVector>::iterator at = poly.m_tvertices.begin();
-                vector<CGrVector>::iterator bt = at;     if(bt != poly.m_tvertices.end()) bt++;
-                vector<CGrVector>::iterator ct = bt;     if(ct != poly.m_tvertices.end()) ct++;
+                auto an = poly.m_normals.begin();
+                auto bn = an;
+                if (bn != poly.m_normals.end()) ++bn;
+                auto cn = bn;
+                if (cn != poly.m_normals.end()) ++cn;
+                auto at = poly.m_tvertices.begin();
+                auto bt = at;
+                if (bt != poly.m_tvertices.end()) ++bt;
+                auto ct = bt;
+                if (ct != poly.m_tvertices.end()) ++ct;
 
 
-                for( ; c != poly.GetVertices().end();  b++, c++)
+                for (; c != poly.GetVertices().end(); ++b, ++c)
                 {
                     // a, b, c is a triangle
                     TriangleBegin();
                     Material(poly.GetMaterial());
                     Texture(poly.GetTexture());
 
-                    if(at != poly.m_tvertices.end())
+                    if (at != poly.m_tvertices.end())
                         TexVertex(*at);
                     Normal(*an);
                     Vertex(*a);
 
-                    if(bt != poly.m_tvertices.end())
+                    if (bt != poly.m_tvertices.end())
                     {
                         TexVertex(*bt);
-                        bt++;
+                        ++bt;
                     }
-                    if(bn != poly.m_normals.end()) 
+                    if (bn != poly.m_normals.end())
                     {
                         Normal(*bn);
-                        bn++;
+                        ++bn;
                     }
                     Vertex(*b);
 
-                    if(ct != poly.m_tvertices.end())
+                    if (ct != poly.m_tvertices.end())
                     {
                         TexVertex(*ct);
-                        ct++;
+                        ++ct;
                     }
-                    if(cn != poly.m_normals.end()) 
+                    if (cn != poly.m_normals.end())
                     {
                         Normal(*cn);
-                        cn++;
+                        ++cn;
                     }
                     Vertex(*c);
 
                     TriangleEnd();
                 }
 
-
                 return;
             }
         }
     }
-
-
-
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -377,100 +362,100 @@ void CRayIntersectionD::PolygonEnd()
 //                p_t - Location to put the distance to the object.
 // Returns :      true for insertion or false if none.
 //
-
-bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIntersection::Object *p_ignore, 
-                                 const CRayIntersection::Object *&p_nearest, double &p_t, CGrVector &p_intersect)
+bool CRayIntersectionD::Intersect(const CRay& p_ray, const double p_maxt, const CRayIntersection::Object* p_ignore,
+                                  const CRayIntersection::Object*& p_nearest, double& p_t, CGrVector& p_intersect)
 {
     // Create a copy of the ray that has support for faster intersection testing
     CRayp ray(p_ray);
 
-    m_statTests++;                  // Count the number of tests
-    NewMark();                      // New mark for this test
+    m_statTests++; // Count the number of tests
+    NewMark(); // New mark for this test
 
-    double tNear = TINY;            // Start of the ray, a small value
-    double tFar = p_maxt;           // End of the ray
+    double tNear = TINY; // Start of the ray, a small value
+    double tFar = p_maxt; // End of the ray
 
     // Clip the ray test range to just include the bounding box for the scene
-    CBoundingBox &sceneBB = m_root->m_bbox;     // Root bounding box is entire scene
-    for(int d=0;  d<3;  d++)            // Loop over the three dimensions
+    const CBoundingBox& sceneBB = m_root->m_bbox; // Root bounding box is entire scene
+    for (int d = 0; d < 3; d++) // Loop over the three dimensions
     {
         // What is the value of this dimension at the near and far points of the ray?
         double rFm = ray.Origin(d) + tNear * ray.Direction(d);
         double rTo = ray.Origin(d) + tFar * ray.Direction(d);
-        if(rTo < rFm)
+        if (rTo < rFm)
         {
             // Ray going in negative direction
-            if(rFm > sceneBB.Max(d))
+            if (rFm > sceneBB.Max(d))
                 tNear = (sceneBB.Max(d) - ray.Origin(d)) / ray.Direction(d);
-            if(rTo < sceneBB.Min(d))
+            if (rTo < sceneBB.Min(d))
                 tFar = (sceneBB.Min(d) - ray.Origin(d)) / ray.Direction(d);
         }
-        else if(rFm < rTo)
+        else if (rFm < rTo)
         {
             // Ray going in positive direction
-            if(rFm < sceneBB.Min(d))
+            if (rFm < sceneBB.Min(d))
                 tNear = (sceneBB.Min(d) - ray.Origin(d)) / ray.Direction(d);
-            if(rTo > sceneBB.Max(d))
+            if (rTo > sceneBB.Max(d))
                 tFar = (sceneBB.Max(d) - ray.Origin(d)) / ray.Direction(d);
         }
         else
         {
             // Case of ray direction = 0 for this dimension.  
             // This ray will not hit at all unless it is inside the bounding box
-            if(rFm < sceneBB.Min(d) || rFm > sceneBB.Max(d))
-                return false;       // No intersection...
+            if (rFm < sceneBB.Min(d) || rFm > sceneBB.Max(d))
+                return false; // No intersection...
         }
 
-        if(tNear > tFar)
-            return false;           // Clipped to nothing, we don't intersect at all
+        if (tNear > tFar)
+            return false; // Clipped to nothing, we don't intersect at all
     }
-   
+
     // There can be problems due to roundoff error so that we would miss
     // an intersection that is exactly at tFar or tNear.  These offsets 
     // allow for that roundoff error.
     tNear -= TINY;
     tFar += TINY;
 
-    if(tFar > p_maxt)
-        tFar = p_maxt;      // But don't let it go beyond our maximum we're looking for...
+    if (tFar > p_maxt)
+        tFar = p_maxt; // But don't let it go beyond our maximum we're looking for...
 
     // Keeping track of the nearest polygon found so far
-    double  nearestT = tFar;          
-    const CIntersectionObject *nearestP = NULL;
- 
+    double nearestT = tFar;
+    const CIntersectionObject* nearestP = nullptr;
+
     // Items we'll put into our stack
     struct StackItem
     {
-        StackItem(const CKdNode *n, double tn, double tf) : node(n), tNear(tn), tFar(tf) {}
-        const CKdNode * node;
-        double          tNear;
-        double          tFar;
+        StackItem(const CKdNode* n, const double tn, const double tf) : node(n), tNear(tn), tFar(tf) {}
+
+        const CKdNode* node;
+        double tNear;
+        double tFar;
     };
 
     // The tree traversal stack
     std::vector<StackItem> stack;
-    stack.reserve(10);          // Reserving space makes this faster
-   // stack.push_back(StackItem(m_root, tNear, tFar));
+    stack.reserve(10); // Reserving space makes this faster
+    // stack.push_back(StackItem(m_root, tNear, tFar));
 
     //
     // The traversal loop
     //
 
     bool pop = false;
-    const CKdNode *pTree = m_root;
+    const CKdNode* pTree = m_root;
     double pTreeNear = tNear;
     double pTreeFar = tFar;
-    
-    while(true)
+
+    while (true)
     {
-        if(pop)
+        if (pop)
         {
             // If the stack is empty, we are done
-            if(stack.empty())
+            if (stack.empty())
                 break;
 
             // Pop the last item off of the stack
-            StackItem &back = stack.back();
+            const StackItem& back = stack.back();
             pTree = back.node;
             pTreeNear = back.tNear;
             pTreeFar = back.tFar;
@@ -479,31 +464,29 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
         }
 
         // Ignore any nodes that are now farther away than the nearest we know so far.
-        if(pTreeNear >= nearestT)
+        if (pTreeNear >= nearestT)
             break;
 
         pop = true;
 
-        if(pTree->m_left == NULL && pTree->m_right == NULL)
+        if (pTree->m_left == nullptr && pTree->m_right == nullptr)
         {
-
             //
             // This is a leaf node.
             // Iterate over all members of this node.
             //
 
-
-            const CKdNode::Member *m = &pTree->m_members[0];
-            for(int ip=pTree->m_members.size(); ip > 0;  ip--, m++)
+            const CKdNode::Member* m = pTree->m_members.data();
+            for (int ip = pTree->m_members.size(); ip > 0; ip--, m++)
             {
-                CIntersectionObject *p = m->m_object;
+                CIntersectionObject* p = m->m_object;
 
                 // Has this member been tested?  We don't need to test again.
-                if(p->WasTested(m_mark))
+                if (p->WasTested(m_mark))
                     continue;
 
                 // Is this a member we ignore?
-                if(p == p_ignore)
+                if (p == p_ignore)
                 {
                     p->SetTested(m_mark);
                     continue;
@@ -519,78 +502,78 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 //
 
                 double t;
-                if(p->WasVisited(m_mark))
+                if (p->WasVisited(m_mark))
                 {
                     // Already visited before, t is already computed.
-                    t = p->GetT();      // Recover the saved version
+                    t = p->GetT(); // Recover the saved version
                     // Is this farther away than our current 
                     // nearest item? If so, we ignore it.
-                    if(t >= nearestT)
+                    if (t >= nearestT)
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    p->SetVisited(m_mark);;     // Not visited before, mark as visited
+                    p->SetVisited(m_mark); // Not visited before, mark as visited
 
                     m_statObjTests++;
-                    t = p->ComputeT(ray);     // Compute the t value
-                    if(t < tNear || t >= nearestT)
+                    t = p->ComputeT(ray); // Compute the t value
+                    if (t < tNear || t >= nearestT)
                     {
-                        p->SetTested(m_mark);    // No reason to test again
-                        continue;               // This member is either too near or 
-                                                // we've already found a closer one.
+                        p->SetTested(m_mark); // No reason to test again
+                        continue; // This member is either too near or 
+                        // we've already found a closer one.
                     }
                 }
 
                 // If this going to be visited again, wait until then
-                if(t >pTreeFar)
+                if (t > pTreeFar)
                     continue;
 
                 // We know the distance to the plane, so let's test the member
                 // to see if the interior point is inside the member.
                 p->SetTested(m_mark);
 
-                 // What's the intersection point on the plane?
+                // What's the intersection point on the plane?
                 CGrVector intersect = ray.PointOnRay(t);
 
                 // Interior test for this point
-                m_statSurfaceTests++;      // Count number of actual member surface tests
-                if(!p->SurfaceTest(intersect))
-                    continue;       // Not on the surface
+                m_statSurfaceTests++; // Count number of actual member surface tests
+                if (!p->SurfaceTest(intersect))
+                    continue; // Not on the surface
 
                 // We have a new candidate for nearest member intersection
                 nearestT = t;
-                nearestP = p; 
+                nearestP = p;
             }
         }
         else
         {
             // An interior node.  
-            assert(pTree->m_members.size() == 0);
+            assert(pTree->m_members.empty());
 
-            int dim = pTree->m_splitDim;        // What is the dimension for the split point?
+            int dim = pTree->m_splitDim; // What is the dimension for the split point?
             double splitPoint = pTree->m_splitPoint;
 
             // What are the from and to points in the dimension of the split point?
             double rFm = ray.Origin(dim) + ray.Direction(dim) * pTreeNear;
             double rTo = ray.Origin(dim) + ray.Direction(dim) * pTreeFar;
 
-            const CKdNode *left = pTree->m_left;
-            const CKdNode *right = pTree->m_right;
+            const CKdNode* left = pTree->m_left;
+            const CKdNode* right = pTree->m_right;
 
-            if(left == NULL)
+            if (left == nullptr)
             {
                 // Only a right subtree exists
-                if(rFm < splitPoint && rTo < splitPoint)
+                if (rFm < splitPoint && rTo < splitPoint)
                 {
                     // Ray completely contained in the left side
                     // We would not be going down this side since it does not exist
                     continue;
                 }
 
-                if((rFm > splitPoint && rTo > splitPoint) || rFm == rTo)
+                if ((rFm > splitPoint && rTo > splitPoint) || rFm == rTo)
                 {
                     // Ray completely contained in the right side
                     pTree = right;
@@ -602,7 +585,7 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 double tAtSplit = (splitPoint - ray.Origin(dim)) / ray.Direction(dim);
 
                 // We must be straddling the two subtrees
-                if(rFm < rTo)
+                if (rFm < rTo)
                 {
                     // Going from lesser to greater. Traverse the left tree first, but it
                     // does not exist, so we then move to the right tree.
@@ -620,11 +603,11 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                     continue;
                 }
             }
-            else if(right == NULL)
+            else if (right == nullptr)
             {
                 // Right is null, so only a left tree exists
 
-                if((rFm < splitPoint && rTo < splitPoint) || rFm == rTo)
+                if ((rFm < splitPoint && rTo < splitPoint) || rFm == rTo)
                 {
                     // Ray completely contained in the left side
                     pTree = left;
@@ -632,7 +615,7 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                     continue;
                 }
 
-                if(rFm > splitPoint && rTo > splitPoint)
+                if (rFm > splitPoint && rTo > splitPoint)
                 {
                     // Ray completely contained in the right side
                     continue;
@@ -642,7 +625,7 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 double tAtSplit = (splitPoint - ray.Origin(dim)) / ray.Direction(dim);
 
                 // We must be straddling the two subtrees
-                if(rFm < rTo)
+                if (rFm < rTo)
                 {
                     // Going to greater to lesser. Traverse the left tree first
                     pTreeFar = tAtSplit;
@@ -663,7 +646,7 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             {
                 // We have both children
                 // Easy cases first:  Only traverse one child...
-                if(rFm < splitPoint && rTo < splitPoint)
+                if (rFm < splitPoint && rTo < splitPoint)
                 {
                     // Only traverse the left tree
                     // Because we didn't hit the split point, the t range remains the same
@@ -673,7 +656,7 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                     continue;
                 }
 
-                if(rFm > splitPoint && rTo > splitPoint)
+                if (rFm > splitPoint && rTo > splitPoint)
                 {
                     // Only traverse the right tree
                     pTree = right;
@@ -682,16 +665,15 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                     continue;
                 }
 
-
-                if(rFm == rTo)
+                if (rFm == rTo)
                 {
                     // We must be going right down the split.  Either side may have 
                     // plane parallel to this one, so do both of them.
 
-                    //if(left->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
-                        stack.push_back(StackItem(left, pTreeNear, pTreeFar));
+                    //if (left->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
+                    stack.emplace_back(left, pTreeNear, pTreeFar);
 
-                    //if(right->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
+                    //if (right->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
                     {
                         pTree = right;
                         pop = false;
@@ -700,55 +682,46 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                     continue;
                 }
 
-                
                 // What is the t value at the split point?
                 double tAtSplit = (splitPoint - ray.Origin(dim)) / ray.Direction(dim);
 
                 // We must be straddling the two subtrees
-                if(rFm < rTo)
+                if (rFm < rTo)
                 {
                     // Going from lesser to greater.  Traverse left tree first, so top of stack
                     // then the right tree, but only if not too far away.
 
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
-                        //if(right->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
-                            stack.push_back(StackItem(right, tAtSplit, pTreeFar));
+                        //if (right->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
+                        stack.emplace_back(right, tAtSplit, pTreeFar);
                     }
 
-                  //  if(left->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
+                    //  if (left->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
                     {
                         pTreeFar = tAtSplit;
                         pTree = left;
                         pop = false;
                     }
-
                 }
                 else
                 {
-
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
-                        //if(left->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
-                            stack.push_back(StackItem(left, tAtSplit, pTreeFar));
+                        //if (left->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
+                        stack.emplace_back(left, tAtSplit, pTreeFar);
                     }
 
-                 //   if(right->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
+                    //   if (right->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
                     {
                         pTreeFar = tAtSplit;
                         pTree = right;
                         pop = false;
                     }
-
                 }
-
             }
-
         }
-
-
     }
-
 
 #if 0
             //
@@ -756,9 +729,9 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             //
 
             // Easy cases first:  Only traverse one child...
-            if(rFm < splitPoint && rTo < splitPoint)
+            if (rFm < splitPoint && rTo < splitPoint)
             {
-                if(left != NULL)
+                if (left != nullptr)
                 {
                     // Only traverse the left tree
                     // Because we didn't hit the split point, the t range remains the same
@@ -771,9 +744,9 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
 
             const CKdNode *right = pTree->m_right;
 
-            if(rFm > splitPoint && rTo > splitPoint)
+            if (rFm > splitPoint && rTo > splitPoint)
             {
-                if(right != NULL)
+                if (right != nullptr)
                 {
                     // Only traverse the right tree
                     pTree = right;
@@ -784,15 +757,15 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             }
 
 
-            if(rFm == rTo)
+            if (rFm == rTo)
             {
-                if(left == NULL)
+                if (left == nullptr)
                 {
                     pTree = right;
                     pop = false;
                     continue;
                 }
-                else if(right == NULL)
+                else if (right == nullptr)
                 {
                     pTree = left;
                     pop = false;
@@ -802,10 +775,10 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 // We must be going right down the split.  Either side may have 
                 // plane parallel to this one, so do both of them.
 
-                //if(left->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
+                //if (left->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
                     stack.push_back(StackItem(left, pTreeNear, pTreeFar));
 
-                //if(right->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
+                //if (right->m_bbox.IntersectTest(ray, pTreeNear, pTreeFar))
                 {
                     pTree = right;
                     pop = false;
@@ -819,20 +792,20 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             double tAtSplit = (splitPoint - ray.Origin(dim)) / ray.Direction(dim);
 
             // We must be straddling the two subtrees
-            if(rFm < rTo)
+            if (rFm < rTo)
             {
                 // Going from lesser to greater.  Traverse left tree first, so top of stack
                 // then the right tree, but only if not too far away.
 
-                if(left == NULL)
+                if (left == nullptr)
                 {
                     pTreeNear = tAtSplit;
                     pTree = right;
                     pop = false;
                 }
-                else if(right == NULL)
+                else if (right == nullptr)
                 {
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
                         pTreeFar = tAtSplit;
                         pTree = left;
@@ -841,13 +814,13 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 }
                 else
                 {
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
-                        //if(right->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
+                        //if (right->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
                             stack.push_back(StackItem(right, tAtSplit, pTreeFar));
                     }
 
-                  //  if(left->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
+                  //  if (left->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
                     {
                         pTreeFar = tAtSplit;
                         pTree = left;
@@ -858,15 +831,15 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             }
             else
             {
-                if(left == NULL)
+                if (left == nullptr)
                 {
                     pTreeFar = tAtSplit;
                     pTree = right;
                     pop = false;
                 }
-                else if(right == NULL)
+                else if (right == nullptr)
                 {
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
                         pTreeNear = tAtSplit;
                         pTree = left;
@@ -875,13 +848,13 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
                 }
                 else
                 {
-                    if(tAtSplit < nearestT)
+                    if (tAtSplit < nearestT)
                     {
-                        //if(left->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
+                        //if (left->m_bbox.IntersectTest(ray, tAtSplit, pTreeFar))
                             stack.push_back(StackItem(left, tAtSplit, pTreeFar));
                     }
 
-                 //   if(right->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
+                 //   if (right->m_bbox.IntersectTest(ray, pTreeNear, tAtSplit))
                     {
                         pTreeFar = tAtSplit;
                         pTree = right;
@@ -892,22 +865,17 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
             }
 
 #endif
-
-
-
-    if(nearestP != NULL)
+    
+    if (nearestP != nullptr)
     {
         p_nearest = nearestP;
         p_t = nearestT;
         p_intersect = ray.PointOnRay(nearestT);
-        return true;                // We have a hit
+        return true; // We have a hit
     }
-    
-    return false;           // No hit
+
+    return false; // No hit
 }
-
-
-
 
 //
 // Name :         CRayIntersectionD::IntersectInfo()
@@ -918,24 +886,22 @@ bool CRayIntersectionD::Intersect(const CRay &p_ray, double p_maxt, const CRayIn
 //                p_t - Distance to the intersection point.
 // Output Parms : p_normal - The polygon normal at the intersection.
 //                p_material - Pointer to the material for this polygon
-//                p_texture - Pointer to the texture for this polygon (or NULL)
+//                p_texture - Pointer to the texture for this polygon (or nullptr)
 //                p_texcoord - The texture coordinate at the intersection
 //
-
-void CRayIntersectionD::IntersectInfo(const CRay &p_ray, const CRayIntersection::Object *p_object, double p_t, 
-                      CGrVector &p_normal, IMaterial *&p_material, 
-                      ITexture *&p_texture, CGrVector &p_texcoord) const
+void CRayIntersectionD::IntersectInfo(const CRay& p_ray, const CRayIntersection::Object* p_object, double p_t,
+                                      CGrVector& p_normal, IMaterial*& p_material,
+                                      ITexture*& p_texture, CGrVector& p_texcoord)
 {
     // Compute intersection point
-    CGrVector intersect = p_ray.Origin() + p_ray.Direction() * p_t;
+    const CGrVector intersect = p_ray.Origin() + p_ray.Direction() * p_t;
 
     // Make it an object
-    const CIntersectionObject *obj = (const CIntersectionObject *)p_object;
+    const auto* obj = dynamic_cast<const CIntersectionObject*>(p_object);
     p_texture = obj->GetTexture();
     p_material = obj->GetMaterial();
     obj->IntersectInfo(intersect, p_normal, p_texcoord);
 }
-
 
 
 //
@@ -943,10 +909,9 @@ void CRayIntersectionD::IntersectInfo(const CRay &p_ray, const CRayIntersection:
 // Description :  Indicate that everything we might want to load
 //                into the ray intersection structure is loaded.
 //
-
 void CRayIntersectionD::LoadingComplete()
 {
-    assert((m_polys.size() + m_triangles.size()) > 0);
+    assert(m_polys.size() + m_triangles.size() > 0);
 
     // Determine the extents in each dimension
     DetermineExtents();
@@ -955,48 +920,43 @@ void CRayIntersectionD::LoadingComplete()
     KdTreeBuild();
 }
 
-
 //
 // Name :         CRayIntersectionD::KdTreeBuild()
 // Description :  Build the Kd tree after we have loaded all of the polygons.
 //
-
 void CRayIntersectionD::KdTreeBuild()
 {
-    if(m_root)
-        delete m_root;
+    delete m_root;
 
-    m_root = new CKdNode(this);             // Create the root node
-    m_root->SetBoundingBox(m_sceneBB);      // Initial box is the scene bounding box
-    m_statNodes++;                  // Counts the nodes
-    m_statMaxDepth = 1;             // For the root node only tree
+    m_root = new CKdNode(this); // Create the root node
+    m_root->SetBoundingBox(m_sceneBB); // Initial box is the scene bounding box
+    m_statNodes++; // Counts the nodes
+    m_statMaxDepth = 1; // For the root node only tree
 
     //
     // Build a tree of nodes all at the same level
     // Iterate over all polygons and triangles
     //
 
-    list<CPolygon>::iterator poly = m_polys.begin();
-    for( ; poly!=m_polys.end();  poly++)
+    for (auto poly = m_polys.begin(); poly != m_polys.end(); ++poly)
     {
-        CPolygon *p = &(*poly);
-        if(p->GetNumVertices() < 4)
+        CPolygon* p = &*poly;
+        if (p->GetNumVertices() < 4)
             continue;
 
         m_root->Add(p);
     }
 
     // And the triangles
-    list<CTriangle>::iterator tri = m_triangles.begin();
-    for( ; tri != m_triangles.end();  tri++)
+    for (auto tri = m_triangles.begin(); tri != m_triangles.end(); ++tri)
     {
-        CTriangle *t = &(*tri);
+        CTriangle* t = &*tri;
         m_root->Add(t);
     }
 
     // Shrink the bounding box around the members
-  //  m_root->ShrinkBoundingBox();
-    
+    //  m_root->ShrinkBoundingBox();
+
     // We have a complete Kd tree at this point. 
     // Split into children.
     m_root->Subdivide();
@@ -1005,49 +965,46 @@ void CRayIntersectionD::KdTreeBuild()
     Traverse(m_root);
 }
 
-
-void CRayIntersectionD::Traverse(CKdNode *node)
+void CRayIntersectionD::Traverse(const CKdNode* node)
 {
-    if(node->m_left == NULL && node->m_right == NULL)
+    if (node->m_left == nullptr && node->m_right == nullptr)
         return;
 
-    if(node->m_left == NULL || node->m_right == NULL)
+    if (node->m_left == nullptr || node->m_right == nullptr)
         m_statOneChild++;
 
-    if(node->m_left)
+    if (node->m_left)
         Traverse(node->m_left);
 
-    if(node->m_right)
+    if (node->m_right)
         Traverse(node->m_right);
 }
-
 
 //
 // Name :         CRayIntersectionD::DetermineExtents()
 // Description :  We need to know the range of the scene, so determine a
 //                bounding box for the entire scene.
 //
-
 void CRayIntersectionD::DetermineExtents()
 {
     // Initially, just fill min and max with an arbitrary vertex.
-    list<CPolygon>::iterator poly = m_polys.begin();
-    list<CTriangle>::iterator tri = m_triangles.begin();
+    auto poly = m_polys.begin();
+    auto tri = m_triangles.begin();
 
     // Set the bounding box to include just one first point
-    if(poly != m_polys.end())
+    if (poly != m_polys.end())
     {
         m_sceneBB.Set(poly->GetVertex(0));
     }
-    else if(tri != m_triangles.end())
+    else if (tri != m_triangles.end())
     {
         m_sceneBB.Set(tri->GetVertex(0));
     }
 
     // Iterate over all polygons and vertices.
-    for( ; poly!=m_polys.end();  poly++)
+    for (; poly != m_polys.end(); ++poly)
     {
-        for(int i=0;  i<poly->GetNumVertices();  i++)
+        for (int i = 0; i < poly->GetNumVertices(); i++)
         {
             // Add the new point
             m_sceneBB.Include(poly->GetVertex(i));
@@ -1055,13 +1012,10 @@ void CRayIntersectionD::DetermineExtents()
     }
 
     // iterate over the triangles
-    for(; tri != m_triangles.end(); tri++)
+    for (; tri != m_triangles.end(); ++tri)
     {
         m_sceneBB.Include(tri->GetVertex(0));
         m_sceneBB.Include(tri->GetVertex(1));
         m_sceneBB.Include(tri->GetVertex(2));
     }
 }
-
-
-

@@ -5,26 +5,24 @@
 class CTriangle : public CIntersectionObject
 {
 public:
-    CTriangle(void);
-    virtual ~CTriangle(void);
+    CTriangle();
+    ~CTriangle() override;
 
-    virtual CRayIntersection::ObjectType Type() const {return CRayIntersection::Triangle;}
+    CRayIntersection::ObjectType Type() const override {return CRayIntersection::Triangle;}
 
-    virtual void AddVertex(const CGrVector &v) {if(m_numVertices < 3) m_vertices[m_numVertices++] = v;}
-    virtual void AddNormal(const CGrVector &n) {if(m_numNormals < 3) m_normals[m_numNormals++] = n;}
-    virtual void AddTexVertex(const CGrVector &t) {if(m_numTVertices < 3) m_tvertices[m_numTVertices++] = t;}
+    void AddVertex(const CGrVector &v) override {if (m_numVertices < 3) m_vertices[m_numVertices++] = v;}
+    void AddNormal(const CGrVector &n) override {if (m_numNormals < 3) m_normals[m_numNormals++] = n;}
+    void AddTexVertex(const CGrVector &t) override {if (m_numTVertices < 3) m_tvertices[m_numTVertices++] = t;}
 
-    virtual void IntersectInfo(const CGrVector &intersect,  
-                   CGrVector &p_normal, CGrVector &p_texcoord) const;
+    void IntersectInfo(const CGrVector &intersect, CGrVector &p_normal, CGrVector &p_texcoord) const override;
 
-    virtual double ComputeT(const CRayp &ray);
-    virtual bool SurfaceTest(const CGrVector &intersect);
+    double ComputeT(const CRayp &ray) override;
+    bool SurfaceTest(const CGrVector &intersect) override;
 
     bool TriangleEnd();
 
-    const CGrVector &GetVertex(int i) {return m_vertices[i];}
-
-    const CBoundingBox &GetBoundingBox() const {return mBBox;}
+    const CGrVector &GetVertex(const int i) {return m_vertices[i];}
+    const CBoundingBox &GetBoundingBox() const override {return mBBox;}
 
 private:
     CGrVector GetBarycentricCoordinate(const CGrVector &p) const;

@@ -15,33 +15,33 @@
 
 // class CGrVRML
 // Class for a single VRML object
-
 class CGrVRML : public CGrObject, public CVRML::Renderer
 {
 public:
     CGrVRML();
-    virtual ~CGrVRML();
+    ~CGrVRML() override;
 
-    virtual void glRender();
-    void Render(CGrRenderer *p_renderer);
+    void glRender() override;
+    void Render(CGrRenderer *p_renderer) override;
 
     bool Load(const char *p_file);
 
 private:
     // These are the renderer callback functions from the VRML library
-    virtual void PolygonBegin();
-    virtual void PolygonEnd();
-    virtual void Vertex(float x, float y, float z);
-    virtual void Normal(float x, float y, float z);
-    virtual void TexCoord(float s, float t);
-    virtual void PushMatrix();
-    virtual void PopMatrix();
-    virtual void Translate(float x, float y, float z);
-    virtual void Rotate(float a, float x, float y, float z);
-    virtual void Scale(float x, float y, float z);
-    virtual void MultMatrix(const double *m);
-    virtual void Material(const float *ambient, const float *diffuse, const float *specular, const float *emissive, float shininess);
-    virtual void Texture(int index);
+    void PolygonBegin() override;
+    void PolygonEnd() override;
+    void Vertex(float x, float y, float z) override;
+    void Normal(float x, float y, float z) override;
+    void TexCoord(float s, float t) override;
+    void PushMatrix() override;
+    void PopMatrix() override;
+    void Translate(float x, float y, float z) override;
+    void Rotate(float a, float x, float y, float z) override;
+    void Scale(float x, float y, float z) override;
+    void MultMatrix(const double *m) override;
+    void Material(const float *ambient, const float *diffuse, const float *specular, const float *emissive,
+                  float shininess) override;
+    void Texture(int index) override;
 
     CVRML        m_vrml;        // The underlying actual VRML object
     CGrRenderer *m_renderer;    // Current renderer
@@ -50,7 +50,7 @@ private:
     std::vector<CGrPtr<CGrMaterial> > m_materials;
 };
 
-class CGrVRMLFactory  
+class CGrVRMLFactory
 {
 public:
 	CGrVRMLFactory();

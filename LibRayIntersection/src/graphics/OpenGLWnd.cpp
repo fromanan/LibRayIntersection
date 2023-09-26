@@ -15,6 +15,7 @@
 
 
 #include "stdafx.h"
+#include "grafx.h"
 
 #include "OpenGLWnd.h"
 
@@ -25,72 +26,62 @@ using namespace std;
 /////////////////////////////////////////////////////////////////////////////
 // COpenGLWnd
 
-COpenGLWnd::COpenGLWnd()
-	: m_pPal(NULL), m_doublebuffer(true), m_created(false)
-{
-}
+COpenGLWnd::COpenGLWnd() : m_created(false), m_doublebuffer(true), m_pPal(nullptr) {}
 
 COpenGLWnd::~COpenGLWnd()
 {
-    if(m_pPal != NULL)
-        delete m_pPal;
+    delete m_pPal;
 }
 
-
 BEGIN_MESSAGE_MAP(COpenGLWnd, CWnd)
-    //{{AFX_MSG_MAP(COpenGLWnd)
     ON_WM_CREATE()
     ON_WM_PAINT()
     ON_WM_ERASEBKGND()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
 
 /////////////////////////////////////////////////////////////////////////////
 // COpenGLWnd message handlers
 
-BOOL COpenGLWnd::PreCreateWindow(CREATESTRUCT& cs) 
+BOOL COpenGLWnd::PreCreateWindow(CREATESTRUCT& cs)
 {
     if (!CWnd::PreCreateWindow(cs))
         return FALSE;
 
     // Added for OpenGL
-    cs.style |= WS_CLIPSIBLINGS | WS_CLIPCHILDREN ;
+    cs.style |= WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 
     return true;
 }
 
-int COpenGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int COpenGLWnd::OnCreate(const LPCREATESTRUCT lpCreateStruct)
 {
     if (CWnd::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    CClientDC dc(this) ;
+    const CClientDC dc(this);
     //
     // Fill in the pixel format descriptor.
     //
-    PIXELFORMATDESCRIPTOR pfd ;
-    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
-    pfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR); 
-    pfd.nVersion   = 1 ; 
-    pfd.dwFlags    = PFD_SUPPORT_OPENGL |
-        PFD_DRAW_TO_WINDOW ;
+    PIXELFORMATDESCRIPTOR pfd = {};
+    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_SUPPORT_OPENGL |
+        PFD_DRAW_TO_WINDOW;
 
-    if(m_doublebuffer)
+    if (m_doublebuffer)
         pfd.dwFlags |= PFD_DOUBLEBUFFER;
 
     pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = 24 ;
+    pfd.cColorBits = 24;
     pfd.cAlphaBits = 8;
-    pfd.cDepthBits = 32 ;
-    pfd.iLayerType = PFD_MAIN_PLANE ;
+    pfd.cDepthBits = 32;
+    pfd.iLayerType = PFD_MAIN_PLANE;
 
-    int nPixelFormat = ChoosePixelFormat(dc.m_hDC, &pfd);
+    const int nPixelFormat = ChoosePixelFormat(dc.m_hDC, &pfd);
     if (nPixelFormat == 0)
         return FormattedErrorAfxMsgBox("ChoosePixelFormat Failed");
 
-    BOOL bResult = SetPixelFormat (dc.m_hDC, nPixelFormat, &pfd);
-    if(!bResult)
+    if (const BOOL bResult = SetPixelFormat(dc.m_hDC, nPixelFormat, &pfd); !bResult)
         return FormattedErrorAfxMsgBox("SetPixelFormat  Failed");
 
     //
@@ -101,18 +92,17 @@ int COpenGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
         return FormattedErrorAfxMsgBox("Unable to create an OpenGL rendering context");
 
     // Create the palette
-    CreateRGBPalette(dc.m_hDC) ;
+    CreateRGBPalette(dc.m_hDC);
 
     m_created = true;
 
     return 0;
 }
 
-
 //
 // CreateRGBPalette
 //
-BOOL COpenGLWnd::CreateRGBPalette(HDC hDC)
+BOOL COpenGLWnd::CreateRGBPalette(const HDC hDC)
 {
     //
     // Check to see if we need a palette
@@ -120,12 +110,12 @@ BOOL COpenGLWnd::CreateRGBPalette(HDC hDC)
     PIXELFORMATDESCRIPTOR pfd;
     int n = GetPixelFormat(hDC);
     DescribePixelFormat(hDC, n, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-    if (!(pfd.dwFlags & PFD_NEED_PALETTE)) return FALSE ;
+    if (!(pfd.dwFlags & PFD_NEED_PALETTE)) return FALSE;
 
     // allocate a log pal and fill it with the color table info
-    LOGPALETTE* pPal = (LOGPALETTE*) malloc(sizeof(LOGPALETTE) 
-        + 256 * sizeof(PALETTEENTRY));
-    if (!pPal) 
+    const auto pPal = static_cast<LOGPALETTE*>(malloc(sizeof(LOGPALETTE)
+        + 256 * sizeof(PALETTEENTRY)));
+    if (!pPal)
     {
         AfxMessageBox(TEXT("Out of memory for pallet"), MB_OK | MB_ICONSTOP);
         return FALSE;
@@ -136,53 +126,48 @@ BOOL COpenGLWnd::CreateRGBPalette(HDC hDC)
     //
     // Create RGB Palette
     //
-    ASSERT( pfd.cColorBits == 8) ;
+    ASSERT(pfd.cColorBits == 8);
     n = 1 << pfd.cColorBits;
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
     {
-        pPal->palPalEntry[i].peRed =
-            ComponentFromIndex(i, pfd.cRedBits, pfd.cRedShift);
-        pPal->palPalEntry[i].peGreen =
-            ComponentFromIndex(i, pfd.cGreenBits, pfd.cGreenShift);
-        pPal->palPalEntry[i].peBlue =
-            ComponentFromIndex(i, pfd.cBlueBits, pfd.cBlueShift);
+        pPal->palPalEntry[i].peRed = ComponentFromIndex(i, pfd.cRedBits, pfd.cRedShift);
+        pPal->palPalEntry[i].peGreen = ComponentFromIndex(i, pfd.cGreenBits, pfd.cGreenShift);
+        pPal->palPalEntry[i].peBlue = ComponentFromIndex(i, pfd.cBlueBits, pfd.cBlueShift);
         pPal->palPalEntry[i].peFlags = 0;
     }
 
     //
     // Fix up color table with system colors.
     //
-    if ((pfd.cColorBits == 8)                           &&
-        (pfd.cRedBits   == 3) && (pfd.cRedShift   == 0) &&
-        (pfd.cGreenBits == 3) && (pfd.cGreenShift == 3) &&
-        (pfd.cBlueBits  == 2) && (pfd.cBlueShift  == 6)
-        )
+    if (pfd.cColorBits  == 8 &&
+        pfd.cRedBits    == 3 && pfd.cRedShift == 0 &&
+        pfd.cGreenBits  == 3 && pfd.cGreenShift == 3 &&
+        pfd.cBlueBits   == 2 && pfd.cBlueShift == 6
+    )
     {
-        for (int j = 1 ; j <= 12 ; j++)
+        for (int j = 1; j <= 12; j++)
             pPal->palPalEntry[m_defaultOverride[j]] = m_defaultPalEntry[j];
     }
 
     // Delete any existing GDI palette
-    if (m_pPal) 
-        delete m_pPal ;
-    m_pPal = new CPalette ;
+    delete m_pPal;
+    m_pPal = new CPalette;
 
-    BOOL bResult = m_pPal->CreatePalette(pPal);
-    free (pPal);
+    const BOOL bResult = m_pPal->CreatePalette(pPal);
+    free(pPal);
 
     return bResult;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 //
 // OpenGLpalette
 //
 unsigned char COpenGLWnd::m_threeto8[8] = {
-    0, 0111>>1, 0222>>1, 0333>>1, 0444>>1, 0555>>1, 0666>>1, 0377
+    0, 0111 >> 1, 0222 >> 1, 0333 >> 1, 0444 >> 1, 0555 >> 1, 0666 >> 1, 0377
 };
 unsigned char COpenGLWnd::m_twoto8[4] = {
-   0, 0x55, 0xaa, 0xff
+    0, 0x55, 0xaa, 0xff
 };
 unsigned char COpenGLWnd::m_oneto8[2] = {
     0, 255
@@ -193,42 +178,38 @@ int COpenGLWnd::m_defaultOverride[13] = {
 };
 
 PALETTEENTRY COpenGLWnd::m_defaultPalEntry[20] = {
-    { 0,   0,   0,    0 }, //0
-    { 0x80,0,   0,    0 }, 
-    { 0,   0x80,0,    0 }, 
-    { 0x80,0x80,0,    0 }, 
-    { 0,   0,   0x80, 0 },
-    { 0x80,0,   0x80, 0 },
-    { 0,   0x80,0x80, 0 },
-    { 0xC0,0xC0,0xC0, 0 }, //7
+    {0, 0, 0, 0}, //0
+    {0x80, 0, 0, 0},
+    {0, 0x80, 0, 0},
+    {0x80, 0x80, 0, 0},
+    {0, 0, 0x80, 0},
+    {0x80, 0, 0x80, 0},
+    {0, 0x80, 0x80, 0},
+    {0xC0, 0xC0, 0xC0, 0}, //7
 
-    { 192, 220, 192,  0 }, //8
-    { 166, 202, 240,  0 },
-    { 255, 251, 240,  0 },
-    { 160, 160, 164,  0 }, //11
+    {192, 220, 192, 0}, //8
+    {166, 202, 240, 0},
+    {255, 251, 240, 0},
+    {160, 160, 164, 0}, //11
 
-    { 0x80,0x80,0x80, 0 }, //12
-    { 0xFF,0,   0,    0 },
-    { 0,   0xFF,0,    0 },
-    { 0xFF,0xFF,0,    0 },
-    { 0,   0,   0xFF, 0 },
-    { 0xFF,0,   0xFF, 0 },
-    { 0,   0xFF,0xFF, 0 },
-    { 0xFF,0xFF,0xFF, 0 }  //19
-  };
-
-
+    {0x80, 0x80, 0x80, 0}, //12
+    {0xFF, 0, 0, 0},
+    {0, 0xFF, 0, 0},
+    {0xFF, 0xFF, 0, 0},
+    {0, 0, 0xFF, 0},
+    {0xFF, 0, 0xFF, 0},
+    {0, 0xFF, 0xFF, 0},
+    {0xFF, 0xFF, 0xFF, 0} //19
+};
 
 //
 // ComponentFromIndex
 //
-unsigned char COpenGLWnd::ComponentFromIndex(int i, UINT nbits, UINT shift)
+unsigned char COpenGLWnd::ComponentFromIndex(const int i, const UINT nbits, const UINT shift)
 {
-    unsigned char val;
-
-    val = (unsigned char) (i >> shift);
-    switch (nbits) {
-
+    auto val = static_cast<unsigned char>(i >> shift);
+    switch (nbits)
+    {
     case 1:
         val &= 0x1;
         return m_oneto8[val];
@@ -246,22 +227,20 @@ unsigned char COpenGLWnd::ComponentFromIndex(int i, UINT nbits, UINT shift)
     }
 }
 
-
-void COpenGLWnd::OnPaint() 
+void COpenGLWnd::OnPaint()
 {
-	CPaintDC dc(this); // device context for painting
+    CPaintDC dc(this); // device context for painting
 
     // Select the palette.
-    CPalette* ppalOld = NULL;
-	if (m_pPal)
-	{
-    	ppalOld = dc.SelectPalette(m_pPal, 0);
-    	dc.RealizePalette();
-	}
-	
-	// Make the HGLRC current
-    BOOL bResult = wglMakeCurrent(dc.m_hDC, m_hrc);
-    if (!bResult)
+    CPalette* ppalOld = nullptr;
+    if (m_pPal)
+    {
+        ppalOld = dc.SelectPalette(m_pPal, 0);
+        dc.RealizePalette();
+    }
+
+    // Make the HGLRC current
+    if (const BOOL bResult = wglMakeCurrent(dc.m_hDC, m_hrc); !bResult)
     {
         FormattedErrorAfxMsgBox("wglMakeCurrent Failed");
     }
@@ -276,175 +255,168 @@ void COpenGLWnd::OnPaint()
     //
     // Set up the mapping of 3-space to screen space
     //
-    GLdouble gldAspect = GLdouble(width)/ GLdouble(height);
+    const GLdouble gldAspect = static_cast<GLdouble>(width) / static_cast<GLdouble>(height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(30.0, gldAspect, 1.0, 10.0);
 
-	// Draw	
-	OnGLDraw(&dc);
+    // Draw	
+    OnGLDraw(&dc);
 
-	//Swap Buffers
-	if(m_doublebuffer)
-      SwapBuffers(dc.m_hDC) ;
+    //Swap Buffers
+    if (m_doublebuffer)
+        SwapBuffers(dc.m_hDC);
 
     // select old palette if we altered it
-    if (ppalOld) 
-        dc.SelectPalette(ppalOld, 0); 
+    if (ppalOld)
+        dc.SelectPalette(ppalOld, 0);
 
-	wglMakeCurrent(NULL, NULL) ;
+    wglMakeCurrent(nullptr, nullptr);
 }
 
-
-void COpenGLWnd::SetDoubleBuffer(bool p_doublebuffer)
+void COpenGLWnd::SetDoubleBuffer(const bool p_doublebuffer)
 {
-   // Double buffering must be set before the window is created.
-   assert(!m_created);
+    // Double buffering must be set before the window is created.
+    assert(!m_created);
 
-   m_doublebuffer = p_doublebuffer;
+    m_doublebuffer = p_doublebuffer;
 }
-
 
 //
 // Name :         COpenGLWnd::OnGLDraw(CDC *pDC)
 // Description :  Default OnGLDraw function.  This function clears the screen to a
 //                strange color.
 //
-
-void COpenGLWnd::OnGLDraw(CDC *pDC)
+void COpenGLWnd::OnGLDraw(CDC* pDC)
 {
-   glClearColor(0.3f, 0.7f, 0.3f, 0.0f) ;
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.3f, 0.7f, 0.3f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   glFlush();
+    glFlush();
 }
 
 //
 // Name :         COpenGLWnd::GetSize()
 // Description :  Convenience function to obtain the window size.
 //
-
-void COpenGLWnd::GetSize(int &p_width, int &p_height)
+void COpenGLWnd::GetSize(int& p_width, int& p_height) const
 {
-   RECT rect;
-   GetClientRect(&rect);
+    RECT rect;
+    GetClientRect(&rect);
 
-   p_width = rect.right;
-   p_height = rect.bottom;
+    p_width = rect.right;
+    p_height = rect.bottom;
 }
 
-
-BOOL COpenGLWnd::OnEraseBkgnd(CDC* pDC) 
+BOOL COpenGLWnd::OnEraseBkgnd(CDC* pDC)
 {
-	return true;
+    return true;
 }
 
 #define DIB_HEADER_MARKER   ((WORD) ('M' << 8) | 'B')
-const int DIB_PADSIZE = 4;
+constexpr int DIB_PADSIZE = 4;
 
 //
 // Name :         COpenGLWnd::OnSaveImage()
 // Description :  This is called by a menu option.  It saves the current window image
 //                as a DIB file.  It pops up a dialog box asking for the file name.
 //
-
 void COpenGLWnd::OnSaveImage()
 {
-   CWaitCursor wait;
+    CWaitCursor wait;
 
-   //
-   // Obtain the image pixels
-   //
+    //
+    // Obtain the image pixels
+    //
 
-   GLbyte **buffer;
-   if(!ObtainPixels(buffer))
-      return;
+    GLbyte** buffer;
+    if (!ObtainPixels(buffer))
+        return;
 
-   //
-   // Determine the output file
-   //
+    //
+    // Determine the output file
+    //
 
-	static _TCHAR BASED_CODE szFilter[] = TEXT("Image Files (*.bmp)|*.bmp|All Files (*.*)|*.*||");
+    static _TCHAR BASED_CODE szFilter[] = TEXT("Image Files (*.bmp)|*.bmp|All Files (*.*)|*.*||");
 
-	CFileDialog dlg(FALSE, TEXT(".bmp"), NULL, 0, szFilter, NULL);
-	if(dlg.DoModal() != IDOK)
-   {
-      delete buffer[0];
-      delete buffer;
-      return;
-   }
+    CFileDialog dlg(FALSE, TEXT(".bmp"), nullptr, 0, szFilter, nullptr);
+    if (dlg.DoModal() != IDOK)
+    {
+        delete buffer[0];
+        delete buffer;
+        return;
+    }
 
-   UpdateWindow();
+    UpdateWindow();
 
-   // Open the file
-   std::ofstream file(dlg.GetPathName(), std::ios::binary);
+    // Open the file
+    std::ofstream file(dlg.GetPathName(), std::ios::binary);
 
-   //
-   // Write the image file header
-   //
+    //
+    // Write the image file header
+    //
 
-   int width, height;
-   GetSize(width, height);
+    int width, height;
+    GetSize(width, height);
 
-   int usewidth3 = (width * 3 + (DIB_PADSIZE - 1)) / DIB_PADSIZE;     
-   usewidth3 *= DIB_PADSIZE;
+    int usewidth3 = (width * 3 + (DIB_PADSIZE - 1)) / DIB_PADSIZE;
+    usewidth3 *= DIB_PADSIZE;
 
-   BITMAPFILEHEADER bmfHdr;   // Header for Bitmap file
+    BITMAPFILEHEADER bmfHdr; // Header for Bitmap file
 
-   // Fill in the bitmap file header
-	bmfHdr.bfType = DIB_HEADER_MARKER;  // "BM"
-   bmfHdr.bfSize = sizeof(BITMAPFILEHEADER) + 
-         sizeof(BITMAPINFOHEADER) + height * usewidth3;
-   bmfHdr.bfReserved1 = 0;
-   bmfHdr.bfReserved2 = 0;
-   bmfHdr.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+    // Fill in the bitmap file header
+    bmfHdr.bfType = DIB_HEADER_MARKER; // "BM"
+    bmfHdr.bfSize = sizeof(BITMAPFILEHEADER) +
+        sizeof(BITMAPINFOHEADER) + height * usewidth3;
+    bmfHdr.bfReserved1 = 0;
+    bmfHdr.bfReserved2 = 0;
+    bmfHdr.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 
-   // Fill in a BITMAPINFOHEADER
-   BITMAPINFOHEADER bmi;
+    // Fill in a BITMAPINFOHEADER
+    BITMAPINFOHEADER bmi;
 
-   bmi.biSize = sizeof(bmi);
-   bmi.biWidth = width;
-   bmi.biHeight = height;
-   bmi.biPlanes = 1;
-   bmi.biBitCount = 24;
-   bmi.biCompression = BI_RGB;
-   bmi.biSizeImage = 0;
-   bmi.biXPelsPerMeter = 1;
-   bmi.biYPelsPerMeter = 1;
-   bmi.biClrUsed = 0;
-   bmi.biClrImportant = 0;
+    bmi.biSize = sizeof(bmi);
+    bmi.biWidth = width;
+    bmi.biHeight = height;
+    bmi.biPlanes = 1;
+    bmi.biBitCount = 24;
+    bmi.biCompression = BI_RGB;
+    bmi.biSizeImage = 0;
+    bmi.biXPelsPerMeter = 1;
+    bmi.biYPelsPerMeter = 1;
+    bmi.biClrUsed = 0;
+    bmi.biClrImportant = 0;
 
-   file.write((const char *)&bmfHdr, sizeof(BITMAPFILEHEADER));
-   file.write((const char *)&bmi, sizeof(bmi));
+    file.write(reinterpret_cast<const char*>(&bmfHdr), sizeof(BITMAPFILEHEADER));
+    file.write(reinterpret_cast<const char*>(&bmi), sizeof(bmi));
 
-   if(!file)
-   {
-      AfxMessageBox(TEXT("Unable to write output file file"), IDOK);
-      delete buffer[0];
-      delete buffer;
+    if (!file)
+    {
+        AfxMessageBox(TEXT("Unable to write output file file"), IDOK);
+        delete buffer[0];
+        delete buffer;
 
-      return;
-   }
+        return;
+    }
 
-   for(int i=0;  i<height;  i++)
-   {
-      file.write((const char *)&buffer[i][0], usewidth3);
-   }
+    for (int i = 0; i < height; i++)
+    {
+        file.write(reinterpret_cast<const char*>(&buffer[i][0]), usewidth3);
+    }
 
-   delete buffer[0];
-   delete buffer;
+    delete buffer[0];
+    delete buffer;
 
-   if(!file)
-   {
-      AfxMessageBox(TEXT("Unable to write output file file"), IDOK);
-      return;
-   }
+    if (!file)
+    {
+        AfxMessageBox(TEXT("Unable to write output file file"), IDOK);
+        return;
+    }
 
-   file.close();
+    file.close();
 
-   wait.Restore();
+    wait.Restore();
 }
-
 
 //
 // Name :         COpenGLWnd::ObtainPixels()
@@ -452,8 +424,7 @@ void COpenGLWnd::OnSaveImage()
 //                image pixels into it from OpenGL.
 // Returns :      true if successful.
 //
-
-bool COpenGLWnd::ObtainPixels(GLbyte **&p_pixels)
+bool COpenGLWnd::ObtainPixels(GLbyte**& p_pixels)
 {
     // Force window to be up-to-date
     UpdateWindow();
@@ -462,104 +433,100 @@ bool COpenGLWnd::ObtainPixels(GLbyte **&p_pixels)
     // Make the OpenGL rendering context current
     //
 
-    CClientDC dc(this) ;
-    BOOL bResult = wglMakeCurrent(dc.m_hDC, m_hrc);
-	if (!bResult)
-	{
-      AfxMessageBox(TEXT("Unable to select OpenGL rendering context, could not obtain pixel data."));
-      p_pixels = NULL;
-      return false;
-	}
+    const CClientDC dc(this);
+    if (const BOOL bResult = wglMakeCurrent(dc.m_hDC, m_hrc); !bResult)
+    {
+        AfxMessageBox(TEXT("Unable to select OpenGL rendering context, could not obtain pixel data."));
+        p_pixels = nullptr;
+        return false;
+    }
 
-   //
-   // Allocate space for the image
-   //
+    //
+    // Allocate space for the image
+    //
 
-   int width, height;
-   GetSize(width, height);
+    int width, height;
+    GetSize(width, height);
 
-   int usewidth3 = (width * 3 + (DIB_PADSIZE - 1)) / DIB_PADSIZE;     
-   usewidth3 *= DIB_PADSIZE;
+    int usewidth3 = (width * 3 + (DIB_PADSIZE - 1)) / DIB_PADSIZE;
+    usewidth3 *= DIB_PADSIZE;
 
-   p_pixels = new GLbyte *[height];
-   p_pixels[0] = new GLbyte[height * usewidth3];
-   for(int j=1;  j<height;  j++)
-      p_pixels[j] = p_pixels[0] + j * usewidth3; 
+    p_pixels = new GLbyte*[height];
+    p_pixels[0] = new GLbyte[height * usewidth3];
+    for (int j = 1; j < height; j++)
+        p_pixels[j] = p_pixels[0] + j * usewidth3;
 
-   //
-   // Configure OpenGL for obtaining the rows.
-   //
+    //
+    // Configure OpenGL for obtaining the rows.
+    //
 
-   GLint swapbytes, lsbfirst, rowlength;
-   GLint skiprows, skippixels, alignment;
+    GLint swapbytes, lsbfirst, rowlength;
+    GLint skiprows, skippixels, alignment;
 
-   /* Save current modes. */
-   glGetIntegerv(GL_PACK_SWAP_BYTES, &swapbytes);
-   glGetIntegerv(GL_PACK_LSB_FIRST, &lsbfirst);
-   glGetIntegerv(GL_PACK_ROW_LENGTH, &rowlength);
-   glGetIntegerv(GL_PACK_SKIP_ROWS, &skiprows);
-   glGetIntegerv(GL_PACK_SKIP_PIXELS, &skippixels);
-   glGetIntegerv(GL_PACK_ALIGNMENT, &alignment);
+    /* Save current modes. */
+    glGetIntegerv(GL_PACK_SWAP_BYTES, &swapbytes);
+    glGetIntegerv(GL_PACK_LSB_FIRST, &lsbfirst);
+    glGetIntegerv(GL_PACK_ROW_LENGTH, &rowlength);
+    glGetIntegerv(GL_PACK_SKIP_ROWS, &skiprows);
+    glGetIntegerv(GL_PACK_SKIP_PIXELS, &skippixels);
+    glGetIntegerv(GL_PACK_ALIGNMENT, &alignment);
 
-   glPixelStorei(GL_PACK_SWAP_BYTES, GL_FALSE);
-   glPixelStorei(GL_PACK_LSB_FIRST, GL_FALSE);
-   glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-   glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-   glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-   glPixelStorei(GL_PACK_ALIGNMENT, DIB_PADSIZE);
+    glPixelStorei(GL_PACK_SWAP_BYTES, GL_FALSE);
+    glPixelStorei(GL_PACK_LSB_FIRST, GL_FALSE);
+    glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+    glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_PACK_ALIGNMENT, DIB_PADSIZE);
 
-   //
-   // Actually read the pixels.
-   //
+    //
+    // Actually read the pixels.
+    //
 
-   glReadBuffer(GL_FRONT);
-   glReadPixels(0, 0, width, height, GL_BGR_EXT,
-                GL_UNSIGNED_BYTE, (GLvoid *)&p_pixels[0][0]);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, width, height, GL_BGR_EXT,
+                 GL_UNSIGNED_BYTE, (GLvoid*)&p_pixels[0][0]);
 
-   /* Restore saved modes. */
-   glPixelStorei(GL_PACK_SWAP_BYTES, swapbytes);
-   glPixelStorei(GL_PACK_LSB_FIRST, lsbfirst);
-   glPixelStorei(GL_PACK_ROW_LENGTH, rowlength);
-   glPixelStorei(GL_PACK_SKIP_ROWS, skiprows);
-   glPixelStorei(GL_PACK_SKIP_PIXELS, skippixels);
-   glPixelStorei(GL_PACK_ALIGNMENT, alignment);
+    /* Restore saved modes. */
+    glPixelStorei(GL_PACK_SWAP_BYTES, swapbytes);
+    glPixelStorei(GL_PACK_LSB_FIRST, lsbfirst);
+    glPixelStorei(GL_PACK_ROW_LENGTH, rowlength);
+    glPixelStorei(GL_PACK_SKIP_ROWS, skiprows);
+    glPixelStorei(GL_PACK_SKIP_PIXELS, skippixels);
+    glPixelStorei(GL_PACK_ALIGNMENT, alignment);
 
-   wglMakeCurrent(NULL, NULL) ;
+    wglMakeCurrent(nullptr, nullptr);
 
-   return true;
+    return true;
 }
-
 
 //
 // Name :        COpenGLWnd::FormattedErrorAfxMsgBox()
 // Description : Output an error message to a message box based on
 //               the GetLastError value.
 //
-
-int COpenGLWnd::FormattedErrorAfxMsgBox(const char *p_msg)
+int COpenGLWnd::FormattedErrorAfxMsgBox(const char* p_msg)
 {
     LPVOID lpMsgBuf;
-    FormatMessage( 
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-        FORMAT_MESSAGE_FROM_SYSTEM | 
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
+        nullptr,
         GetLastError(),
         0, // Default language
-        (LPTSTR) &lpMsgBuf,
+        reinterpret_cast<LPTSTR>(&lpMsgBuf),
         0,
-        NULL 
-        );
+        nullptr
+    );
 
     ostrstream str;
-    str << p_msg << " " << (char *)lpMsgBuf << ends;
-    
+    str << p_msg << " " << static_cast<char*>(lpMsgBuf) << ends;
+
     // Free the buffer.
-    LocalFree( lpMsgBuf );
+    LocalFree(lpMsgBuf);
 
 #ifdef UNICODE
-	CComBSTR bstr;
-	bstr = str.str();
+    const CComBSTR bstr = str.str();
     AfxMessageBox(bstr, MB_OK | MB_ICONSTOP);
 #else
     AfxMessageBox(str.str(), MB_OK | MB_ICONSTOP);
@@ -568,6 +535,3 @@ int COpenGLWnd::FormattedErrorAfxMsgBox(const char *p_msg)
 
     return -1;
 }
-
-
-

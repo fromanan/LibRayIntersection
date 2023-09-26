@@ -18,20 +18,20 @@ public:
     GLuint TexName();
     GLuint MipTexName();
 
-    void Fill(int r, int g, int b);
-    void Set(int x, int y, int r, int g, int b);
+    void Fill(int r, int g, int b) const;
+    void Set(int x, int y, int r, int g, int b) const;
     void SetSize(int p_x, int p_y);
     void SameSize(const CTexture &p_img);
     void Copy(const CTexture &p_img);
     bool LoadFile(LPCTSTR lpszPathName);
     BOOLEAN Empty() const {return m_width <= 0 || m_height <= 0;}
     CTexture &operator=(const CTexture &p_img);
-    void SetAutoBmp(bool s) {m_autobmp = s;}
+    void SetAutoBmp(const bool s) {m_autobmp = s;}
 
-    BYTE *operator[](int i) {return m_image[i];}
-    const BYTE *operator[](int i) const {return m_image[i];}
-    BYTE *Row(int i) {return m_image[i];}
-    const BYTE *Row(int i) const {return m_image[i];}
+    BYTE *operator[](const int i) {return m_image[i];}
+    const BYTE *operator[](const int i) const {return m_image[i];}
+    BYTE *Row(const int i) {return m_image[i];}
+    const BYTE *Row(const int i) const {return m_image[i];}
 
     int Width() const {return m_width;}
     int Height() const {return m_height;}

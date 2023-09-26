@@ -36,44 +36,44 @@ public:
 	void TriangleEnd();
 
     // Generic insertion routines
-	void Material(IMaterial *p_material);
-	void Vertex(const CGrVector &p_vertex);
-	void TexVertex(const CGrVector &p_tvertex);
-	void Normal(const CGrVector &p_normal);
-	void Texture(ITexture *p_texture);
+	void Material(IMaterial *p_material) const;
+	void Vertex(const CGrVector &p_vertex) const;
+	void TexVertex(const CGrVector &p_tvertex) const;
+	void Normal(const CGrVector &p_normal) const;
+	void Texture(ITexture *p_texture) const;
 
-    double SetIntersectionCost(double c) {m_intersectionCost = c;  return c;}
+    double SetIntersectionCost(const double c) {m_intersectionCost = c;  return c;}
     double GetIntersectionCost() const {return m_intersectionCost;}
-    double SetTraverseCost(double c) {m_traverseCost = c;  return c;}
+    double SetTraverseCost(const double c) {m_traverseCost = c;  return c;}
     double GetTraverseCost() const {return m_traverseCost;}
-    int SetMaxDepth(int m) {m_maxDepth = m;  return m;}
+    int SetMaxDepth(const int m) {m_maxDepth = m;  return m;}
     int GetMaxDepth() const {return m_maxDepth;}
-    int SetMinLeaf(int m) {m_minLeaf = m;  return m;}
+    int SetMinLeaf(const int m) {m_minLeaf = m;  return m;}
     int GetMinLeaf() const {return m_minLeaf;}
    
    // Intersection testing
    bool Intersect(const CRay &p_ray, double p_maxt, const CRayIntersection::Object *p_ignore, 
        const CRayIntersection::Object *&p_object, double &p_t, CGrVector &p_intersect);
-   void IntersectInfo(const CRay &p_ray, const CRayIntersection::Object *p_object, double p_t, 
-                      CGrVector &p_normal, IMaterial *&p_material, 
-                      ITexture *&p_texture, CGrVector &p_texcoord) const; 
+	static void IntersectInfo(const CRay &p_ray, const CRayIntersection::Object *p_object, double p_t, 
+	                          CGrVector &p_normal, IMaterial *&p_material, 
+	                          ITexture *&p_texture, CGrVector &p_texcoord); 
 
-    void SaveStats();
+    void SaveStats() const;
 
     int GetMaxDepth() {return m_maxDepth;}
     int GetMinLeaf() {return m_minLeaf;}
     double GetIntersectionCost() {return m_intersectionCost;}
     double GetTraverseCost() {return m_traverseCost;}
-    void StatIncNodes(int c=1) {m_statNodes += c;}
-    void NewDepth(int d) {if(d > m_statMaxDepth) m_statMaxDepth = d;}
+    void StatIncNodes(const int c=1) {m_statNodes += c;}
+    void NewDepth(const int d) {if (d > m_statMaxDepth) m_statMaxDepth = d;}
 
-    int GetMark() {return m_mark;}
+    int GetMark() const {return m_mark;}
     int NewMark() {m_mark++;  return m_mark;}
 
 private:
     void KdTreeBuild();
 	void DetermineExtents();
-    void Traverse(CKdNode *node);
+    void Traverse(const CKdNode *node);
 
     CRayIntersection::ObjectType m_loading; // Type of object we are loading
     CIntersectionObject *m_loadingObject;   // Object we are loading

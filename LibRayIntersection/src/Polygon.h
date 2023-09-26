@@ -6,24 +6,23 @@ class CPolygon : public CIntersectionObject
 {
 public:
     CPolygon() {}
-    virtual ~CPolygon(void);
+    ~CPolygon() override;
 
-    virtual CRayIntersection::ObjectType Type() const {return CRayIntersection::Polygon;}
+    CRayIntersection::ObjectType Type() const override {return CRayIntersection::Polygon;}
 
-    virtual void AddVertex(const CGrVector &v) {m_vertices.push_back(v);}
-    virtual void AddNormal(const CGrVector &n) {m_normals.push_back(n);}
-    virtual void AddTexVertex(const CGrVector &t) {m_tvertices.push_back(t);}
+    void AddVertex(const CGrVector &v) override {m_vertices.push_back(v);}
+    void AddNormal(const CGrVector &n) override {m_normals.push_back(n);}
+    void AddTexVertex(const CGrVector &t) override {m_tvertices.push_back(t);}
     bool PolygonEnd();
 
-    virtual double ComputeT(const CRayp &ray);
-    virtual bool SurfaceTest(const CGrVector &intersect);
+    double ComputeT(const CRayp &ray) override;
+    bool SurfaceTest(const CGrVector &intersect) override;
 
-    virtual void IntersectInfo(const CGrVector &intersect,  
-                       CGrVector &p_normal, CGrVector &p_texcoord) const;
+    void IntersectInfo(const CGrVector &intersect, CGrVector &p_normal, CGrVector &p_texcoord) const override;
 
     std::vector<CGrVector> &GetVertices() {return m_vertices;}
-    const CGrVector &GetVertex(int v) {return m_vertices[v];}
-    int GetNumVertices() {return (int)m_vertices.size();}
+    const CGrVector &GetVertex(const int v) {return m_vertices[v];}
+    int GetNumVertices() const { return static_cast<int>(m_vertices.size()); }
 
     double GetD() const {return m_d;}
     const CGrVector &GetNormal() const {return m_normal;}

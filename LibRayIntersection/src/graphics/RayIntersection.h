@@ -12,9 +12,6 @@
 //                                New IMaterial and ITexture interfaces
 //
 
-#ifndef _RAYINTERSECTION_H
-#define _RAYINTERSECTION_H
-
 #ifndef LIBRIEXPORT
 #ifdef LIBRIDLL
 #define LIBRIEXPORT  __declspec( dllexport )
@@ -91,7 +88,7 @@ public:
         component by dimension.
         \param d Dimension to access, 0 - 2
         \return Component of the origin of the ray */
-    const double Origin(int d) const {return m_o[d];}
+    double Origin(const int d) const {return m_o[d];}
 
     //! Ray direction.
     /*! Allows access to the direction of the ray as a CGrVector object.
@@ -103,7 +100,7 @@ public:
         component by dimension.
         \param d Dimension to access, 0 - 2
         \return Component of the direction of the ray */
-    const double Direction(int d) const {return m_d[d];}
+    double Direction(const int d) const {return m_d[d];}
 
     //! Assignment operator.
     CRay &operator=(const CRay &r) {m_o = r.m_o; m_d = r.m_d; return *this;}
@@ -112,7 +109,7 @@ public:
     /*! Given a t value, this function computes a point on the ray.
         \param t t value to use.
         \return Point on the ray */
-    CGrVector PointOnRay(double t) const {return m_o + m_d * t;}
+    CGrVector PointOnRay(const double t) const {return m_o + m_d * t;}
 
 private:
     CGrVector    m_o;
@@ -130,34 +127,34 @@ public:
 	virtual ~CRayIntersection();
 
     //! Initialize the system prior to insertion of polygons or triangles.
-    void Initialize();
+    void Initialize() const;
 
     //! Indication that all polygons or triangles have been loaded.
-	void LoadingComplete();
+	void LoadingComplete() const;
 
     //! Begin polygon insertion.
     /*! Begin insertion of a polygon into the system. 
         
         Polygons with 3 vertices are automatically treated as triangles. */
-	void PolygonBegin();
+	void PolygonBegin() const;
 
     //! End polygon insertion. 
     /*! This function indicates the end of a polygon. Subsequent calls to
         set vertices, normals, or texture coordinates are ignored until the 
         next call to PolygonBegin or TriangleBegin. */
-	void PolygonEnd();
+	void PolygonEnd() const;
 
     //! Begin triangle insertion.
     /*! This function is called to indicate the beginning of the process of
         entering triangles. Only one triangle can be entered at a time prior 
         to the call to TriangleEnd(). */
-    void TriangleBegin();
+    void TriangleBegin() const;
 
     //! End triangle insertion.
     /*! This function indicates the end of a triangle. Subsequent calls to
         set vertices, normals, or texture coordinates are ignored until the 
         next call to PolygonBegin or TriangleBegin. */
-    void TriangleEnd();
+    void TriangleEnd() const;
 
     //! Set the current material.
     /*! Sets a current pointer to a material. This material will be associated
@@ -166,40 +163,40 @@ public:
         pointer to an interface to materials. Material classes should be derived
         from this interface.
         \param material The material pointer to set. */
-	void Material(IMaterial *material);
+	void Material(IMaterial *material) const;
 
     //! Set the current texture.
     /*! Sets a current pointer to a texture. This texture will be associated
         with subsequent triangles and polygons. The pointer is persistent and
         does not have to be reset for each triangle or polygon. This is a 
         pointer to an interface to texture. Texture classes should be derived
-        from this interface. If no texture is supplied, call the function with NULL.
+        from this interface. If no texture is supplied, call the function with nullptr.
 
         Texture pointer are optional. Textures can be identified by a supplied
         texture pointer or make a part of the material class.
         \param texture The texture pointer to set. */
-    void Texture(ITexture *texture);
+    void Texture(ITexture *texture) const;
 
     //! Specifies a vertex for a polygon or triangle.
     /*! This call specifies a vertex for a polygon or a triangle. Vertices are 
         supplied in counter-clockwise order. At least 3 vertices must be supplied 
         for a polygon and exactly three for a triangle.
         \param vertex The vertex specified for the triangle or polygon. */
-	void Vertex(const CGrVector &vertex);
+	void Vertex(const CGrVector &vertex) const;
 
     //! Specifies a normal for a polygon or triangle.
     /*! This call specifies a normal for a polygon or a triangle. Normals are associated
         with vertices. Either one normal can be supplied for the entire object or one
         normal per vertex should be supplied.
         \param normal The normal specified for the triangle or polygon. */
-	void Normal(const CGrVector &normal);
+	void Normal(const CGrVector &normal) const;
 
     //! Specifies a texture coordinate. 
     /*! This call specifies a texture coordinate for a polygon or triangle. 
         Texture coordinates are optional and should not be supplied if they are
         not required, as the texture computation does increase the runtime, slightly.
         \param tvertex The texture coordinate. */
-	void TexVertex(const CGrVector &tvertex);
+	void TexVertex(const CGrVector &tvertex) const;
 
     //! \cond INTERNAL
     // Parameter routines
@@ -234,7 +231,7 @@ public:
         \param ray Ray to test.
         \param maxt A maximum allowable t value. No intersection will be 
         returned for an object farther away than this.
-        \param ignore An object to ignore or NULL if nothing is to be ignored.
+        \param ignore An object to ignore or nullptr if nothing is to be ignored.
         \param object [out] The object hit if any.
         \param t [out] The t value for the intersection point.
         \param intersect [out] The intersection point.
@@ -271,5 +268,3 @@ private:
 
     CRayIntersectionD *ri;
 };
-
-#endif

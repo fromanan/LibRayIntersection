@@ -27,8 +27,7 @@ CGrRenderer::~CGrRenderer() = default;
 // Description :  Configure the projection information for 
 //                our renderer.
 //
-
-void CGrRenderer::Perspective(double p_angle, double p_aspect, double p_near, double p_far)
+void CGrRenderer::Perspective(const double p_angle, const double p_aspect, const double p_near, const double p_far)
 {
     m_angle = p_angle;
     m_aspect = p_aspect;
@@ -40,9 +39,9 @@ void CGrRenderer::Perspective(double p_angle, double p_aspect, double p_near, do
 // Name :         CGrRenderer::LookAt()
 // Description :  Set the look-at parameters for the view.
 //
-void CGrRenderer::LookAt(double ex, double ey, double ez,
-                         double cx, double cy, double cz,
-                         double ux, double uy, double uz)
+void CGrRenderer::LookAt(const double ex, const double ey, const double ez,
+                         const double cx, const double cy, const double cz,
+                         const double ux, const double uy, const double uz)
 {
     m_eye.Set(ex, ey, ez);
     m_center.Set(cx, cy, cz);
@@ -53,7 +52,7 @@ void CGrRenderer::LookAt(double ex, double ey, double ez,
 // Name :         CGrRenderer::Render() 
 // Description :  Here's the workhorse function.  It causes the scene graph to be rendered.
 //
-bool CGrRenderer::Render(CGrPtr<CGrObject>& p_object)
+bool CGrRenderer::Render(const CGrPtr<CGrObject>& p_object)
 {
     // Do anything we need to do before we render.
     RendererStart();
@@ -123,7 +122,7 @@ void CGrRenderer::AddLight(const CGrPoint& p_loc, const float* p_ambient,
 // Description :  Alternative versions
 //
 
-void CGrRenderer::AddLight(double x, double y, double z, double w, const float* p_ambient,
+void CGrRenderer::AddLight(const double x, const double y, const double z, const double w, const float* p_ambient,
                            const float* p_diffuse, const float* p_specular)
 {
     AddLight(CGrPoint(x, y, z, w), p_ambient, p_diffuse, p_specular);
@@ -169,7 +168,6 @@ void CGrRenderer::RendererColor(double* c) {}
 void CGrRenderer::RendererPushMatrix() {}
 
 void CGrRenderer::RendererPopMatrix() {}
-
 
 void CGrRenderer::RendererRotate(double a, double x, double y, double z) {}
 

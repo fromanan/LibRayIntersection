@@ -7,14 +7,14 @@
 class CIntersectionObject : public CRayIntersection::Object
 {
 public:
-    CIntersectionObject(void);
-    virtual ~CIntersectionObject(void);
+    CIntersectionObject();
+    virtual ~CIntersectionObject();
 
     virtual void AddVertex(const CGrVector &v) = 0;
     virtual void AddNormal(const CGrVector &n) = 0;
     virtual void AddTexVertex(const CGrVector &t) = 0;
-  
-    const CBoundingBox &GetBoundingBox() const {return mBBox;}
+
+    virtual const CBoundingBox &GetBoundingBox() const {return mBBox;}
 
     virtual double ComputeT(const CRayp &ray) = 0;   
     virtual bool SurfaceTest(const CGrVector &intersect) = 0;
@@ -27,16 +27,16 @@ public:
     void SetMaterial(IMaterial *material) {m_material = material;}
     IMaterial *GetMaterial() const {return m_material;}
 
-    bool WasTested(int mark) {return m_markTested == mark;}
-    void SetTested(int mark) {m_markTested = mark;}
-    bool WasVisited(int mark) {return m_markVisited == mark;}
-    void SetVisited(int mark) {m_markVisited = mark;}
+    bool WasTested(const int mark) const {return m_markTested == mark;}
+    void SetTested(const int mark) {m_markTested = mark;}
+    bool WasVisited(const int mark) const {return m_markVisited == mark;}
+    void SetVisited(const int mark) {m_markVisited = mark;}
 
-    double GetT() {return m_t;}
+    double GetT() const {return m_t;}
 
 protected:
     void SetBoundingBox(const CBoundingBox &box) {mBBox = box;}
-    void SetT(double t) {m_t = t;}
+    void SetT(const double t) {m_t = t;}
 
 private:
     // Associated values

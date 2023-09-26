@@ -29,7 +29,7 @@ public:
     virtual void Clear() {m_lights.clear();}
 
     // The call to invoke the renderer
-    bool Render(CGrPtr<CGrObject> &p_object);
+    bool Render(const CGrPtr<CGrObject> &p_object);
 
     // The functions that make up the renderer
     // Some are abstract, others have default values
@@ -69,8 +69,8 @@ public:
     const CGrPoint &Eye() const {return m_eye;}
     const CGrPoint &Center() const {return m_center;}
     const CGrPoint &Up() const {return m_up;}
-    int LightCnt() const {return int(m_lights.size());}
-    const Light &GetLight(int n) const {return m_lights[n];}
+    int LightCnt() const {return static_cast<int>(m_lights.size());}
+    const Light &GetLight(const int n) const {return m_lights[n];}
     CGrTexture *PolyTexture() {return m_texture;}
     const std::list<CGrPoint> &PolyVertices() const {return m_polyvertex;}
     const std::list<CGrPoint> &PolyNormals() const {return m_polynormal;}
@@ -94,5 +94,4 @@ private:
     std::list<CGrPoint>  m_polyvertex;
     std::list<CGrPoint>  m_polynormal;
     std::list<CGrPoint>  m_polytexture;
-
 };

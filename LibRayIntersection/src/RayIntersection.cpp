@@ -10,9 +10,6 @@
 
 #include "RayIntersectionD.h"
 
-
-
-
 // 
 // To use:
 //
@@ -30,7 +27,6 @@
 // 6.  Call IntersectInfo() to get intersection information for rendering
 //
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -45,24 +41,23 @@ CRayIntersection::~CRayIntersection()
     delete ri;
 }
 
-
-void CRayIntersection::Initialize() {ri->Initialize();}
-void CRayIntersection::LoadingComplete() {ri->LoadingComplete();}
+void CRayIntersection::Initialize() const {ri->Initialize();}
+void CRayIntersection::LoadingComplete() const {ri->LoadingComplete();}
 
 // Polygon insertion
-void CRayIntersection::PolygonBegin() {ri->PolygonBegin();}
-void CRayIntersection::PolygonEnd() {ri->PolygonEnd();}
+void CRayIntersection::PolygonBegin() const {ri->PolygonBegin();}
+void CRayIntersection::PolygonEnd() const {ri->PolygonEnd();}
 
 // Triangle insertion
-void CRayIntersection::TriangleBegin() {ri->TriangleBegin();}
-void CRayIntersection::TriangleEnd() {ri->TriangleEnd();}
+void CRayIntersection::TriangleBegin() const {ri->TriangleBegin();}
+void CRayIntersection::TriangleEnd() const {ri->TriangleEnd();}
 
 // Generic insertion routines
-void CRayIntersection::Material(IMaterial *p_material) {ri->Material(p_material);}
-void CRayIntersection::Vertex(const CGrVector &p_vertex) {ri->Vertex(p_vertex);}
-void CRayIntersection::TexVertex(const CGrVector &p_tvertex) {ri->TexVertex(p_tvertex);}
-void CRayIntersection::Normal(const CGrVector &p_normal) {ri->Normal(p_normal);}
-void CRayIntersection::Texture(ITexture *p_texture) {ri->Texture(p_texture);}
+void CRayIntersection::Material(IMaterial *p_material) const {ri->Material(p_material);}
+void CRayIntersection::Vertex(const CGrVector &p_vertex) const {ri->Vertex(p_vertex);}
+void CRayIntersection::TexVertex(const CGrVector &p_tvertex) const {ri->TexVertex(p_tvertex);}
+void CRayIntersection::Normal(const CGrVector &p_normal) const {ri->Normal(p_normal);}
+void CRayIntersection::Texture(ITexture *p_texture) const {ri->Texture(p_texture);}
 
 // Parameter routines
 double CRayIntersection::SetIntersectionCost(double c) {return ri->SetIntersectionCost(c);}

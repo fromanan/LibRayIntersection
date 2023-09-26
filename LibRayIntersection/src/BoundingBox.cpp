@@ -1,20 +1,16 @@
 #include "StdAfx.h"
 #include "BoundingBox.h"
 
+inline double bmin(const double a, const double b) {return a < b ? a : b;}
+inline double bmax(const double a, const double b) {return a < b ? b : a;}
 
-inline double bmin(double a, double b) {return a < b ? a : b;}
-inline double bmax(double a, double b) {return a < b ? b : a;}
-
-CBoundingBox::CBoundingBox(void)
+CBoundingBox::CBoundingBox()
 {
     mBounds[0].Set(0, 0, 0);
     mBounds[1].Set(0, 0, 0);
 }
 
-CBoundingBox::~CBoundingBox(void)
-{
-}
-
+CBoundingBox::~CBoundingBox() = default;
 
 //
 // Name :         CBoundingBox::Include()
@@ -23,21 +19,20 @@ CBoundingBox::~CBoundingBox(void)
 
 void CBoundingBox::Include(const CGrVector &p)
 {
-    if(p.X() < mBounds[0].X())
+    if (p.X() < mBounds[0].X())
         mBounds[0].X() = p.X();
-    if(p.Y() < mBounds[0].Y())
+    if (p.Y() < mBounds[0].Y())
         mBounds[0].Y() = p.Y();
-    if(p.Z() < mBounds[0].Z())
+    if (p.Z() < mBounds[0].Z())
         mBounds[0].Z() = p.Z();
 
-    if(p.X() > mBounds[1].X())
+    if (p.X() > mBounds[1].X())
         mBounds[1].X() = p.X();
-    if(p.Y() > mBounds[1].Y())
+    if (p.Y() > mBounds[1].Y())
         mBounds[1].Y() = p.Y();
-    if(p.Z() > mBounds[1].Z())
+    if (p.Z() > mBounds[1].Z())
         mBounds[1].Z() = p.Z();
 }
-
 
 //
 // Name :         CBoundingBox::IntersectWith()
@@ -53,7 +48,7 @@ void CBoundingBox::IntersectWith(const CBoundingBox &box)
     mBounds[1].Z(bmin(mBounds[1].Z(), box.mBounds[1].Z()));
 
     // Determine if empty...
-    if(mBounds[0].X() >= mBounds[1].X() ||
+    if (mBounds[0].X() >= mBounds[1].X() ||
         mBounds[0].Y() >= mBounds[1].Y() ||
         mBounds[0].Z() >= mBounds[1].Z())
     {
@@ -62,21 +57,19 @@ void CBoundingBox::IntersectWith(const CBoundingBox &box)
     }
 }
 
-
-
 //
 // Name :         CBoundingBox::IntersectTest()
 // Description :  Determine if a ray intersects this bounding box
 //                Modified Smits method
 //
-bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
+bool CBoundingBox::IntersectTest(const CRayp &ray, const double t0, const double t1) const
 {
     const CGrVector &invDirection = ray.InvDirection();
     const CGrVector &origin = ray.Origin();
 
     double tmin, tmax;
 
-    if(invDirection.X() < 0)
+    if (invDirection.X() < 0)
     {
         tmin = (mBounds[1].X() - origin.X()) * invDirection.X();
         tmax = (mBounds[0].X() - origin.X()) * invDirection.X();
@@ -90,7 +83,7 @@ bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
     double tymin;
     double tymax;
 
-    if(invDirection.Y() < 0)
+    if (invDirection.Y() < 0)
     {
         tymin = (mBounds[1].Y() - origin.Y()) * invDirection.Y();
         tymax = (mBounds[0].Y() - origin.Y()) * invDirection.Y();
@@ -101,7 +94,7 @@ bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
         tymax = (mBounds[1].Y() - origin.Y()) * invDirection.Y();
     }
 
-    if ( (tmin > tymax) || (tymin > tmax) )
+    if (tmin > tymax || tymin > tmax)
         return false;
 
     if (tymin > tmin)
@@ -111,7 +104,7 @@ bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
 
     double tzmin, tzmax;
 
-    if(invDirection.Z() < 0)
+    if (invDirection.Z() < 0)
     {
         tzmin = (mBounds[1].Z() - origin.Z()) * invDirection.Z();
         tzmax = (mBounds[0].Z() - origin.Z()) * invDirection.Z();
@@ -122,8 +115,7 @@ bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
         tzmax = (mBounds[1].Z() - origin.Z()) * invDirection.Z();
     }
 
-
-    if ( (tmin > tzmax) || (tzmin > tmax) )
+    if (tmin > tzmax || tzmin > tmax)
         return false;
 
     if (tzmin > tmin)
@@ -131,5 +123,5 @@ bool CBoundingBox::IntersectTest(const CRayp &ray, double t0, double t1) const
     if (tzmax < tmax)
         tmax = tzmax;
 
-    return ( (tmin < t1) && (tmax > t0) );
+    return tmin < t1 && tmax > t0;
 }

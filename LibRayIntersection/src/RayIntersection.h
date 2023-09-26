@@ -50,9 +50,9 @@ public:
     CRay(const CRay &r) {m_o = r.m_o; m_d = r.m_d;}
 
     const CGrPoint &Origin() const {return m_o;}
-    const double Origin(int d) const {return m_o[d];}
+    double Origin(int d) const {return m_o[d];}
     const CGrPoint &Direction() const {return m_d;}
-    const double Direction(int d) const {return m_d[d];}
+    double Direction(int d) const {return m_d[d];}
     CRay &operator=(const CRay &r) {m_o = r.m_o; m_d = r.m_d; return *this;}
     CGrPoint PointOnRay(double t) const {return m_o + m_d * t;}
 

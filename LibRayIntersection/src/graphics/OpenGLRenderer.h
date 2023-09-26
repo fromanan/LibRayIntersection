@@ -16,17 +16,17 @@ class COpenGLRenderer : public CGrRenderer
 {
 public:
 	COpenGLRenderer();
-	virtual ~COpenGLRenderer();
+	~COpenGLRenderer() override;
 
-    virtual bool RendererStart();
-    virtual bool RendererEnd();
-    virtual void RendererEndPolygon();
-    virtual void RendererColor(double *c);
-    virtual void RendererMaterial(CGrMaterial *p_material);
-    virtual void RendererTranslate(double x, double y, double z);
-    virtual void RendererTransform(const CGrTransform *p_transform);
-    virtual void RendererRotate(double a, double x, double y, double z);
-    virtual void RendererPopMatrix();
-    virtual void RendererPushMatrix();
+	bool RendererStart() override;
+	bool RendererEnd() override;
+	void RendererEndPolygon() override;
+	void RendererColor(double *c) override;
+	void RendererMaterial(CGrMaterial *p_material) override;
+	void RendererTranslate(double x, double y, double z) override;
+	void RendererTransform(const CGrTransform *p_transform) override;
+	void RendererRotate(double a, double x, double y, double z) override;
+	void RendererPopMatrix() override;
+	void RendererPushMatrix() override;
 
 };

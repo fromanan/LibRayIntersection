@@ -12,7 +12,5 @@ CRayp::CRayp(const CRay &r)
     m_invDirection.Set(1 / m_d.X(), 1 / m_d.Y(), 1 / m_d.Z());
 }
 
-CRayp::~CRayp(void)
-{
-}
+CRayp::~CRayp() = default;
 

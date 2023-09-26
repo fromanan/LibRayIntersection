@@ -27,7 +27,7 @@ inline double _Length(const double* a)
 
 inline void _Normalize(double* a)
 {
-    double len = _Length(a);
+    const double len = _Length(a);
     a[0] /= len;
     a[1] /= len;
     a[2] /= len;
@@ -47,7 +47,7 @@ inline void _Identity(double t[4][4])
             t[i][j] = i == j ? 1. : 0.;
 }
 
-inline void _Translate(double t[4][4], double x, double y, double z)
+inline void _Translate(double t[4][4], const double x, const double y, const double z)
 {
     ::_Identity(t);
     t[0][3] = x;
@@ -55,11 +55,11 @@ inline void _Translate(double t[4][4], double x, double y, double z)
     t[2][3] = z;
 }
 
-inline void _RotateX(double m[4][4], double r)
+inline void _RotateX(double m[4][4], const double r)
 {
-    double rr = r * GR_DTOR;
-    double cr = cos(rr);
-    double sr = sin(rr);
+    const double rr = r * GR_DTOR;
+    const double cr = cos(rr);
+    const double sr = sin(rr);
 
     m[0][0] = 1;
     m[0][1] = 0;
@@ -79,11 +79,11 @@ inline void _RotateX(double m[4][4], double r)
     m[3][3] = 1;
 }
 
-inline void _RotateY(double m[4][4], double r)
+inline void _RotateY(double m[4][4], const double r)
 {
-    double rr = r * GR_DTOR;
-    double cr = cos(rr);
-    double sr = sin(rr);
+    const double rr = r * GR_DTOR;
+    const double cr = cos(rr);
+    const double sr = sin(rr);
 
     m[0][0] = cr;
     m[0][1] = 0;
@@ -103,11 +103,11 @@ inline void _RotateY(double m[4][4], double r)
     m[3][3] = 1;
 }
 
-inline void _RotateZ(double m[4][4], double r)
+inline void _RotateZ(double m[4][4], const double r)
 {
-    double rr = r * GR_DTOR;
-    double cr = cos(rr);
-    double sr = sin(rr);
+    const double rr = r * GR_DTOR;
+    const double cr = cos(rr);
+    const double sr = sin(rr);
 
     m[0][0] = cr;
     m[0][1] = -sr;
@@ -175,7 +175,7 @@ CGrCamera::CGrCamera()
 
 CGrCamera::~CGrCamera() = default;
 
-void CGrCamera::Apply(int width, int height, bool noidentity)
+void CGrCamera::Apply(const int width, const int height, const bool noidentity) const
 {
     // Configure the projection matrix
     glMatrixMode(GL_PROJECTION);
@@ -183,7 +183,7 @@ void CGrCamera::Apply(int width, int height, bool noidentity)
         glLoadIdentity();
 
     ::gluPerspective(m_fieldofview,
-                     GLdouble(width) / GLdouble(height),
+                     static_cast<GLdouble>(width) / static_cast<GLdouble>(height),
                      ZNear(), ZFar());
 
     // Configure the modelview matrix
@@ -196,8 +196,9 @@ void CGrCamera::Apply(int width, int height, bool noidentity)
                 m_up[0], m_up[1], m_up[2]);
 }
 
-void CGrCamera::Set(double p_eyex, double p_eyey, double p_eyez, double p_centerx, double p_centery, double p_centerz,
-                    double p_upx, double p_upy, double p_upz)
+void CGrCamera::Set(const double p_eyex, const double p_eyey, const double p_eyez, const double p_centerx,
+                    const double p_centery, const double p_centerz, const double p_upx, const double p_upy,
+                    const double p_upz)
 {
     m_eye[0] = p_eyex;
     m_eye[1] = p_eyey;
@@ -215,7 +216,7 @@ void CGrCamera::Set(double p_eyex, double p_eyey, double p_eyez, double p_center
     ComputeFrame();
 }
 
-void CGrCamera::SetEye(double p_eyex, double p_eyey, double p_eyez)
+void CGrCamera::SetEye(const double p_eyex, const double p_eyey, const double p_eyez)
 {
     m_eye[0] = p_eyex;
     m_eye[1] = p_eyey;
@@ -224,7 +225,7 @@ void CGrCamera::SetEye(double p_eyex, double p_eyey, double p_eyez)
     ComputeFrame();
 }
 
-void CGrCamera::SetCenter(double p_centerx, double p_centery, double p_centerz)
+void CGrCamera::SetCenter(const double p_centerx, const double p_centery, const double p_centerz)
 {
     m_center[0] = p_centerx;
     m_center[1] = p_centery;
@@ -233,7 +234,7 @@ void CGrCamera::SetCenter(double p_centerx, double p_centery, double p_centerz)
     ComputeFrame();
 }
 
-void CGrCamera::SetUp(double p_upx, double p_upy, double p_upz)
+void CGrCamera::SetUp(const double p_upx, const double p_upy, const double p_upz)
 {
     m_up[0] = p_upx;
     m_up[1] = p_upy;
@@ -282,7 +283,7 @@ void CGrCamera::ComputeFrame()
 // Camera rotation operations.  These function rotate the camera
 // around the eye position.
 //
-void CGrCamera::Pan(double d)
+void CGrCamera::Pan(const double d)
 {
     double ucen[4][4];
     _Translate(ucen, m_eye[0], m_eye[1], m_eye[2]);
@@ -303,7 +304,7 @@ void CGrCamera::Pan(double d)
     ComputeFrame();
 }
 
-void CGrCamera::Tilt(double d)
+void CGrCamera::Tilt(const double d)
 {
     double ucen[4][4];
     _Translate(ucen, m_eye[0], m_eye[1], m_eye[2]);
@@ -324,7 +325,7 @@ void CGrCamera::Tilt(double d)
     ComputeFrame();
 }
 
-void CGrCamera::Roll(double d)
+void CGrCamera::Roll(const double d)
 {
     double ucen[4][4];
     _Translate(ucen, m_eye[0], m_eye[1], m_eye[2]);
@@ -350,7 +351,7 @@ void CGrCamera::Roll(double d)
 // the center location.  Note that camera roll and center roll would
 // be the same thing.  So, we only need Yaw and Pitch.
 //
-void CGrCamera::Yaw(double d)
+void CGrCamera::Yaw(const double d)
 {
     double ucen[4][4];
     _Translate(ucen, m_center[0], m_center[1], m_center[2]);
@@ -371,7 +372,7 @@ void CGrCamera::Yaw(double d)
     ComputeFrame();
 }
 
-void CGrCamera::Pitch(double d)
+void CGrCamera::Pitch(const double d)
 {
     double ucen[4][4];
     _Translate(ucen, m_center[0], m_center[1], m_center[2]);
@@ -397,7 +398,7 @@ void CGrCamera::Pitch(double d)
 // Description :  A camera dolly operation moves the camera in space.
 //                This function moves the camera and center together.
 //
-void CGrCamera::Dolly(double x, double y, double z)
+void CGrCamera::Dolly(const double x, const double y, const double z)
 {
     double t[4][4];
     DollyHelper(t, x, y, z);
@@ -408,7 +409,7 @@ void CGrCamera::Dolly(double x, double y, double z)
     // Frame does not change...
 }
 
-void CGrCamera::DollyCamera(double x, double y, double z)
+void CGrCamera::DollyCamera(const double x, const double y, const double z)
 {
     double t[4][4];
     DollyHelper(t, x, y, z);
@@ -417,7 +418,7 @@ void CGrCamera::DollyCamera(double x, double y, double z)
     ComputeFrame();
 }
 
-void CGrCamera::DollyCenter(double x, double y, double z)
+void CGrCamera::DollyCenter(const double x, const double y, const double z)
 {
     double t[4][4];
     DollyHelper(t, x, y, z);
@@ -426,7 +427,7 @@ void CGrCamera::DollyCenter(double x, double y, double z)
     ComputeFrame();
 }
 
-void CGrCamera::DollyHelper(double m[4][4], double x, double y, double z)
+void CGrCamera::DollyHelper(double m[4][4], const double x, const double y, const double z)
 {
     double uncam[4][4];
     UnRotCamera(uncam);
@@ -442,7 +443,7 @@ void CGrCamera::MoveIn(double z)
 {
     double view[3];
     _Subtract(m_eye, m_center, view);
-    double dist = _Length(view);
+    const double dist = _Length(view);
     z *= dist;
     if (z < -dist / 2)
         z = -dist / 2;
@@ -456,7 +457,7 @@ void CGrCamera::MoveIn(double z)
 // Name :         CGrCamera::MouseWheel()
 // Description :  Handle mouse wheel movements
 //
-void CGrCamera::MouseWheel(short zDelta)
+void CGrCamera::MouseWheel(const short zDelta)
 {
     MoveIn(-zDelta * m_wheelSpeed);
 }
@@ -465,10 +466,10 @@ void CGrCamera::MouseWheel(short zDelta)
 // Name :         CGrCamera::SetMouseMode()
 // Description :  Set the mode for a mouse button
 //
-void CGrCamera::SetMouseMode(eMouseMode m, int b)
+void CGrCamera::SetMouseMode(const eMouseMode m, const int b)
 {
     assert(b > 0 && b <= NumButtons);
-
+    
     m_mousemode[b - 1] = m;
 }
 
@@ -478,7 +479,7 @@ void CGrCamera::SetMouseMode(eMouseMode m, int b)
 // Parameters :   x, y : Mouse coordinates
 //                button : 1 to NumButtons
 //
-void CGrCamera::MouseDown(int x, int y, int button)
+void CGrCamera::MouseDown(const int x, const int y, const int button)
 {
     assert(button > 0 && button <= NumButtons);
 
@@ -487,7 +488,7 @@ void CGrCamera::MouseDown(int x, int y, int button)
     m_mouseButton = button;
 }
 
-bool CGrCamera::MouseMove(int x, int y, UINT nFlags)
+bool CGrCamera::MouseMove(const int x, const int y, const UINT nFlags)
 {
     if (nFlags & MK_LBUTTON && nFlags & MK_RBUTTON)
     {
@@ -553,7 +554,7 @@ bool CGrCamera::MouseMove(int x, int y, UINT nFlags)
 // Description :  Turn on or off gravity.  Gravity simply 
 //                forces the up direction to stay up.
 //
-void CGrCamera::SetGravity(bool p_gravity)
+void CGrCamera::SetGravity(const bool p_gravity)
 {
     if (m_gravity == p_gravity)
         return;
@@ -579,7 +580,7 @@ double CGrCamera::CameraDistance() const
     return _Length(view);
 }
 
-inline void CGrCamera::RotCamera(double m[4][4])
+inline void CGrCamera::RotCamera(double m[4][4]) const
 {
     ::_Identity(m);
     m[0][0] = m_camerax[0];
@@ -593,7 +594,7 @@ inline void CGrCamera::RotCamera(double m[4][4])
     m[2][2] = m_cameraz[2];
 }
 
-inline void CGrCamera::UnRotCamera(double m[4][4])
+inline void CGrCamera::UnRotCamera(double m[4][4]) const
 {
     ::_Identity(m);
     m[0][0] = m_camerax[0];
@@ -607,7 +608,7 @@ inline void CGrCamera::UnRotCamera(double m[4][4])
     m[2][2] = m_cameraz[2];
 }
 
-void CGrCamera::RotCameraX(double m[4][4], double a)
+void CGrCamera::RotCameraX(double m[4][4], double a) const
 {
     double uncam[4][4];
     UnRotCamera(uncam);
@@ -619,7 +620,7 @@ void CGrCamera::RotCameraX(double m[4][4], double a)
     _Multiply(uncam, rot, tocam, m);
 }
 
-void CGrCamera::RotCameraY(double m[4][4], double a)
+void CGrCamera::RotCameraY(double m[4][4], double a) const
 {
     double uncam[4][4];
     UnRotCamera(uncam);
@@ -631,7 +632,7 @@ void CGrCamera::RotCameraY(double m[4][4], double a)
     _Multiply(uncam, rot, tocam, m);
 }
 
-void CGrCamera::RotCameraZ(double m[4][4], double a)
+void CGrCamera::RotCameraZ(double m[4][4], double a) const
 {
     double uncam[4][4];
     UnRotCamera(uncam);

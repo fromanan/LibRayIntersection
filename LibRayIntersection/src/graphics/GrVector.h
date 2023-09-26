@@ -46,7 +46,7 @@ public:
         \param y Y value.
         \param z Optional Z value. Defaults to 0 if not supplied.
         \param w Optional W value. Defaults to 1 is not supplied. */
-    CGrVector(double x, double y, double z=0, double w=1.) {m[0] = x;  m[1] = y;  m[2] = z;  m[3] = w;}
+    CGrVector(const double x, const double y, const double z=0, const double w=1.) {m[0] = x;  m[1] = y;  m[2] = z;  m[3] = w;}
 
     //! Constructor that initializes the vector from a 4 element array of floats.
     /*! This function will copy the values from a float array into the vector. It 
@@ -93,16 +93,16 @@ public:
     const double &W() const {return m[3];}
 
     //! Set the value of X
-    double X(double p) {return m[0] = p;}
+    double X(const double p) {return m[0] = p;}
 
     //! Set the value of Y
-    double Y(double p) {return m[1] = p;}
+    double Y(const double p) {return m[1] = p;}
 
     //! Set the value of Z
-    double Z(double p) {return m[2] = p;}
+    double Z(const double p) {return m[2] = p;}
 
     //! Set the value of W
-    double W(double p) {return m[3] = p;}
+    double W(const double p) {return m[3] = p;}
 
     //! Set the value of the vector.
     /*! \param x X value.
@@ -113,7 +113,7 @@ public:
             v.Set(12, 1, 9, 0);
         \endcode
     */
-    void Set(double x, double y, double z=0.0, double w=1.) {m[0] = x;  m[1] = y;  m[2] = z;  m[3] = w;}
+    void Set(const double x, const double y, const double z=0.0, const double w=1.) {m[0] = x;  m[1] = y;  m[2] = z;  m[3] = w;}
 
     //! Set the vector from a 4 element array of floats.
     /*! This function will copy the values from a float array into the vector. It 
@@ -131,7 +131,7 @@ public:
 
     //! Compute the 2D Perp operator on X, Y.
     /*! Z is set to 0 and W is set to 1. */
-    CGrVector Perp2() const {return CGrVector(-m[1], m[0], 0);}
+    CGrVector Perp2() const { return { -m[1], m[0], 0 }; }
 
 #ifndef NOOPENGL
     //! Executes a glVertex4dv call based on the CGrVector values.
@@ -145,13 +145,13 @@ public:
 #endif
 
     //! Subtraction operator. Returns this - b (4D).
-    CGrVector operator -(const CGrVector &b) const {return CGrVector(m[0]-b.m[0], m[1]-b.m[1], m[2]-b.m[2], m[3]-b.m[3]);}
+    CGrVector operator -(const CGrVector &b) const { return { m[0]-b.m[0], m[1]-b.m[1], m[2]-b.m[2], m[3]-b.m[3] }; }
 
     //! Unary minus operator. Negates all values.
-    CGrVector operator -() const {return CGrVector(-m[0], -m[1], -m[2], -m[3]);}
+    CGrVector operator -() const { return { -m[0], -m[1], -m[2], -m[3] }; }
 
     //! Addition operator. Returns this+b (4D).
-    CGrVector operator +(const CGrVector &b) const {return CGrVector(m[0]+b.m[0], m[1]+b.m[1], m[2]+b.m[2], m[3]+b.m[3]);}
+    CGrVector operator +(const CGrVector &b) const { return { m[0]+b.m[0], m[1]+b.m[1], m[2]+b.m[2], m[3]+b.m[3] }; }
 
     //! -= operator. Subtracts b from this vector (4D).
     CGrVector &operator -=(const CGrVector &b) {m[0]-=b.m[0]; m[1]-=b.m[1]; m[2]-=b.m[2]; m[3]-=b.m[3]; return *this;}
@@ -163,10 +163,10 @@ public:
     CGrVector &operator /=(double n) {m[0]/=n; m[1]/=n; m[2]/=n; m[3]/=n; return *this;}
 
     //! *= operator. Multiplies values by a scalar (4D).
-    CGrVector operator *(double n) const {return CGrVector(m[0]*n, m[1]*n, m[2]*n, m[3]*n);}
+    CGrVector operator *(double n) const { return { m[0]*n, m[1]*n, m[2]*n, m[3]*n }; }
 
     //! / operator. Returns this/n, where n is a scalar (4D).
-    CGrVector operator /(double n) const {return CGrVector(m[0]/n, m[1]/n, m[2]/n, m[3]/n);}
+    CGrVector operator /(double n) const { return { m[0]/n, m[1]/n, m[2]/n, m[3]/n }; }
 
     //! Operator that allows a CGrVector object to be treated as a const array
     /*! This operator allows the values in const CGrVector object to be accessed
@@ -194,16 +194,16 @@ public:
     double Length() const {return sqrt(m[0]*m[0] + m[1]*m[1] + m[2]*m[2] + m[3]*m[3]);}
 
     //! Returns the squared length of the vector as a 4D vector. Only uses X,Y,Z, W.
-    double LengthSquared() const {return (m[0]*m[0] + m[1]*m[1] + m[2]*m[2] + m[3]*m[3]);}
+    double LengthSquared() const {return m[0]*m[0] + m[1]*m[1] + m[2]*m[2] + m[3]*m[3];}
 
     //! Normalize as a 4D vector. Affects X, Y, Z, W.
-    void Normalize() {double l = Length();  m[0] /= l;  m[1] /= l;  m[2] /= l;  m[3] /= l;}
+    void Normalize() { const double l = Length();  m[0] /= l;  m[1] /= l;  m[2] /= l;  m[3] /= l;}
 
     //! Compute this += p * w, where p is a vector and w is a scalar (4D).
     /*! This function is used to create weighted sums of other vector objects in 4D.
         \param p Vector to add to this one.
         \param w Scalar weight that the vector p is multiplied by prior to the addition. */
-    void WeightedAdd(const CGrVector &p, double w) {m[0] += p.m[0] * w;  m[1] += p.m[1] * w;  m[2] += p.m[2] * w;  m[3] += p.m[3] * w;} 
+    void WeightedAdd(const CGrVector &p, const double w) {m[0] += p.m[0] * w;  m[1] += p.m[1] * w;  m[2] += p.m[2] * w;  m[3] += p.m[3] * w;} 
 
     //! Member-wise multiply by another vector (4D).
     /*! Computes this[i] *= p[i] for each vector value. 
@@ -213,7 +213,7 @@ public:
     // 3D-only variations
 
     //! Normalize as a 3D vector. Only affects X, Y, Z.
-    void Normalize3() {double l = Length3();  m[0] /= l;  m[1] /= l;  m[2] /= l;}
+    void Normalize3() {const double l = Length3();  m[0] /= l;  m[1] /= l;  m[2] /= l;}
 
     //! Returns the length of the vector as a 3D vector. Only uses X,Y,Z.
     double Length3() const {return sqrt(m[0]*m[0] + m[1]*m[1] + m[2]*m[2]);}
@@ -223,17 +223,17 @@ public:
 
     //! For each value in the vector, set to the minimum of this[i] or p[i].
     /*! \param p Vector of values to compare with this vector. */
-    void Minimize(const CGrVector &p) {for(int i=0;  i<4;  i++) m[i] = p.m[i] < m[i] ? p.m[i] : m[i];}
+    void Minimize(const CGrVector &p) {for (int i=0;  i<4;  i++) m[i] = p.m[i] < m[i] ? p.m[i] : m[i];}
 
     //! For each value in the vector, set to the maximum of this[i] or p[i].
     /*! \param p Vector of values to compare with this vector. */
-    void Maximize(const CGrVector &p) {for(int i=0;  i<4;  i++) m[i] = p.m[i] > m[i] ? p.m[i] : m[i];}
+    void Maximize(const CGrVector &p) {for (int i=0;  i<4;  i++) m[i] = p.m[i] > m[i] ? p.m[i] : m[i];}
 
     //! Compute this += p * w, where p is a vector and w is a scalar (3D).
     /*! This function is used to create weighted sums of other vector objects in 3D.
         \param p Vector to add to this one.
         \param w Scalar weight that the vector p is multiplied by prior to the addition. */
-    void WeightedAdd3(const CGrVector &p, double w) {m[0] += p.m[0] * w;  m[1] += p.m[1] * w;  m[2] += p.m[2] * w;} 
+    void WeightedAdd3(const CGrVector &p, const double w) {m[0] += p.m[0] * w;  m[1] += p.m[1] * w;  m[2] += p.m[2] * w;} 
 
     //! Member-wise multiply by another vector.
     /*! Computes this[i] *= p[i] for each vector value. 
@@ -246,7 +246,6 @@ private:
 
 /*! \defgroup VecTranGlobals CGrVector and CGrTransform global functions
 */
-
 
 //! Compute a normalized version of a vector (4D).
 /*! \ingroup VecTranGlobals
@@ -285,7 +284,7 @@ inline CGrVector Normalize3(const CGrVector &p)
     \param b Vector b.*/
 inline CGrVector Cross(const CGrVector &a, const CGrVector &b)
 {
-   return CGrVector(a.Y()*b.Z() - a.Z()*b.Y(), a.Z()*b.X() - a.X()*b.Z(), a.X()*b.Y() - a.Y()*b.X(), 0);
+    return { a.Y()*b.Z() - a.Z()*b.Y(), a.Z()*b.X() - a.X()*b.Z(), a.X()*b.Y() - a.Y()*b.X(), 0 } ;
 }
 
 //! Compute the dot product of two vectors (2D).
@@ -308,7 +307,7 @@ inline double Dot3(const CGrVector &a, const CGrVector &b)
    return a.X() * b.X() + a.Y() * b.Y() + a.Z() * b.Z();
 }
 
-//! Compute the distance betwen two vectors (3D).
+//! Compute the distance between two vectors (3D).
 /*! \ingroup VecTranGlobals
     The scalar result is |a - b|.
     \param a Vector a.
