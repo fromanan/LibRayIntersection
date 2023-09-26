@@ -30,6 +30,9 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
+#pragma warning( push )
+#pragma warning( disable : 5033)
+
 #include "_detail.hpp"
 
 namespace glm{
@@ -41,7 +44,7 @@ namespace detail
 
 		for(int i = 0; i < 10; ++i)	
 			f *= f;             // this will overflow before
-								// the for­loop terminates
+								// the for loop terminates
 		return f;
 	}
 
@@ -419,3 +422,5 @@ namespace detail
 
 }//namespace detail
 }//namespace glm
+
+#pragma warning( pop )
